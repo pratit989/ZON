@@ -1,7 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
   final List<String> list = ['Healing Hearts', 'Woof Project Rescue', 'Applied Animal', 'Small Paws'];
+  final FirebaseAuth authInstance;
+
+  Home({
+    Key key,
+    @required this.authInstance,
+  }) : super(key: key);
   @override
   _DogHelpState createState() => _DogHelpState();
 }
@@ -172,7 +179,8 @@ class _DogHelpState extends State<Home> {
                         ),
                       ),
                       FloatingActionButton.extended(
-                          onPressed: () {
+                          onPressed: () async {
+                            await widget.authInstance.signOut();
                             Navigator.pushReplacementNamed(context, '/Login');
                           },
                           backgroundColor: Colors.transparent,
@@ -560,7 +568,7 @@ class _DogHelpState extends State<Home> {
                             child: Container(
                               margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
                               alignment: Alignment.centerLeft,
-                              child: FlatButton.icon(
+                              child: TextButton.icon(
                                   onPressed: () {},
                                   icon: Icon(
                                     Icons.add,
@@ -595,7 +603,7 @@ class _DogHelpState extends State<Home> {
                                           ),
                                         ),
                                       ),
-                                      FlatButton(
+                                      TextButton(
                                         onPressed: () {},
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.start,
