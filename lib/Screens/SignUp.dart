@@ -82,6 +82,7 @@ class _LoginState extends State<SignUp> {
                                     top: MediaQuery.of(context).size.height*0.02,
                                   ),
                                   child: TextFormField(
+                                    textCapitalization: TextCapitalization.words,
                                     validator: (value) {
                                       if(value.isEmpty || value == 'Name') {
                                         return 'Please enter a valid name.';
@@ -177,6 +178,10 @@ class _LoginState extends State<SignUp> {
                                             );
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(SnackBar(content: Text('Processing Data')));
+                                            User user = widget.authInstance.currentUser;
+                                            user.updateProfile(
+                                              displayName: name,
+                                            );
                                             Navigator.pushReplacementNamed(context, '/Login');
                                           } on FirebaseAuthException catch (e) {
                                             if (e.code == 'weak-password') {

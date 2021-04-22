@@ -10,6 +10,7 @@ import 'package:dog_help_demo/Screens/Home.dart';
 import 'package:dog_help_demo/Screens/DogProfile.dart';
 import 'package:camera/camera.dart';
 import 'package:dog_help_demo/Screens/lander.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,11 +74,15 @@ class _AppState extends State<App> {
       return Center(child: CircularProgressIndicator());
     }
 
+    // initialisation of Firebase Authentication
     FirebaseAuth auth = FirebaseAuth.instance;
+    // initialisation of Firebase Storage
+    firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
+    // Running the main app
     return MaterialApp(
       home: Lander(authInstance: auth,),
       routes: {
-        '/Home': (context) => Home(authInstance: auth,),
+        '/Home': (context) => Home(authInstance: auth, storageInstance: storage,),
         '/DogProfile': (context) => DogProfile(),
         '/Camera': (context) => TakePictureScreen(camera: widget.camera),
         '/SaveADog': (context) => SaveADog(),

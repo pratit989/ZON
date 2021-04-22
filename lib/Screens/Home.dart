@@ -1,21 +1,60 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class Home extends StatefulWidget {
   final List<String> list = ['Healing Hearts', 'Woof Project Rescue', 'Applied Animal', 'Small Paws'];
   final FirebaseAuth authInstance;
+  final firebase_storage.FirebaseStorage storageInstance;
 
   Home({
     Key key,
-    @required this.authInstance,
+    @required this.authInstance, @required this.storageInstance,
   }) : super(key: key);
   @override
   _DogHelpState createState() => _DogHelpState();
 }
 
 class _DogHelpState extends State<Home> {
+  String profileURL;
+  bool _initialised = false;
+  bool _error = false;
+
+  Future<void> profile() async {
+    try {
+      print('users/' + widget.authInstance.currentUser.uid + '/1p.jpg');
+      profileURL = await widget.storageInstance
+          .ref('users/' + widget.authInstance.currentUser.uid + '/1p.jpg')
+          .getDownloadURL();
+
+      setState(() {
+        _initialised = true;
+      });
+    } catch (e) {
+      setState(() {
+        _error = true;
+      });
+    }
+    // Within your widgets:
+    // Image.network(downloadURL);
+  }
+
+  @override
+  void initState() {
+    profile();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_error) {
+      return Text("Something went wrong");
+    }
+
+    // Show a loader until FlutterFire is initialized
+    if (!_initialised) {
+      return Center(child: CircularProgressIndicator());
+    }
     return Scaffold(
       extendBodyBehindAppBar: true,
       drawer: Drawer(
@@ -31,7 +70,7 @@ class _DogHelpState extends State<Home> {
                     children: [
                       CircleAvatar(
                         maxRadius: 30,
-                        backgroundImage: AssetImage('assets/1p.jpg'),
+                        backgroundImage: NetworkImage(profileURL),
                       ),
                       Container(
                         margin: EdgeInsets.symmetric(horizontal: 10),
@@ -40,7 +79,7 @@ class _DogHelpState extends State<Home> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Hero',
+                              widget.authInstance.currentUser.displayName,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500,
