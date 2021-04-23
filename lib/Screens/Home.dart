@@ -1,6 +1,8 @@
+import 'package:dog_help_demo/Screens/ProfilePicture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+
 
 class Home extends StatefulWidget {
   final List<String> list = ['Healing Hearts', 'Woof Project Rescue', 'Applied Animal', 'Small Paws'];
@@ -8,51 +10,56 @@ class Home extends StatefulWidget {
   final firebase_storage.FirebaseStorage storageInstance;
 
   Home({
-    Key key,
-    @required this.authInstance, @required this.storageInstance,
-  }) : super(key: key);
+    required this.authInstance, required this.storageInstance,
+  });
   @override
   _DogHelpState createState() => _DogHelpState();
 }
 
 class _DogHelpState extends State<Home> {
-  String profileURL;
-  bool _initialised = false;
+  late String profileURL;
+  // Set default `_initialized` and `_error` state to false
+  bool _initialized = false;
   bool _error = false;
 
-  Future<void> profile() async {
+  // Define an async function to initialize FlutterFire
+  void initializeProfile() async {
     try {
-      print('users/' + widget.authInstance.currentUser.uid + '/1p.jpg');
-      profileURL = await widget.storageInstance
-          .ref('users/' + widget.authInstance.currentUser.uid + '/1p.jpg')
+      // Wait for Firebase to initialize and set `_initialized` state to true
+      print('users/' + widget.authInstance.currentUser!.uid + '/1p.jpg');
+      profileURL =  await widget.storageInstance
+          .ref('users/' + widget.authInstance.currentUser!.uid + '/1p.jpg')
           .getDownloadURL();
-
       setState(() {
-        _initialised = true;
+        _initialized = true;
       });
-    } catch (e) {
+    } catch(e) {
+      // Set `_error` state to true if Firebase initialization fails
       setState(() {
         _error = true;
       });
     }
-    // Within your widgets:
-    // Image.network(downloadURL);
   }
 
   @override
   void initState() {
-    profile();
+    initializeProfile();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_error) {
-      return Text("Something went wrong");
+    void fun() {
+      setState(() {});
+    }
+    fun();
+    // Show error message if initialization failed
+    if(_error) {
+      return Text('Something went wrong');
     }
 
     // Show a loader until FlutterFire is initialized
-    if (!_initialised) {
+    if (!_initialized) {
       return Center(child: CircularProgressIndicator());
     }
     return Scaffold(
@@ -61,16 +68,36 @@ class _DogHelpState extends State<Home> {
         child: Container(
           color: Colors.black87,
           child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height*0.04, vertical: MediaQuery.of(context).size.height*0.1),
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.height*0.04,
+                vertical: MediaQuery.of(context).size.height*0.1
+            ),
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      CircleAvatar(
-                        maxRadius: 30,
-                        backgroundImage: NetworkImage(profileURL),
+                      GestureDetector(
+                        onTap: () async {
+                          print('tapped');
+                          await Navigator.pushNamed(
+                              context,
+                              ExtractArguments.routeName,
+                              arguments:PictureDisplay(
+                                  profileURL,
+                                  widget.authInstance,
+                                  widget.storageInstance,
+                              )
+                          );
+                          initializeProfile();
+                          setState(() {});
+                        },
+                        child: CircleAvatar(
+                          maxRadius: 30,
+                          backgroundImage: NetworkImage(profileURL),
+                          key: UniqueKey(),
+                        ),
                       ),
                       Container(
                         margin: EdgeInsets.symmetric(horizontal: 10),
@@ -79,7 +106,7 @@ class _DogHelpState extends State<Home> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.authInstance.currentUser.displayName,
+                              widget.authInstance.currentUser!.displayName!,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dog_help_demo/Screens/ProfilePicture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:dog_help_demo/Screens/Camera.dart';
@@ -9,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:dog_help_demo/Screens/Home.dart';
 import 'package:dog_help_demo/Screens/DogProfile.dart';
 import 'package:camera/camera.dart';
-import 'package:dog_help_demo/Screens/lander.dart';
+import 'package:dog_help_demo/Screens/Lander.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 Future<void> main() async {
@@ -28,14 +29,13 @@ class App extends StatefulWidget {
   final CameraDescription camera;
 
   App({
-    Key key,
-    @required this.camera,
-  }) : super(key: key);
+    required this.camera,
+  });
   _AppState createState() => _AppState();
 }
 
 class _AppState extends State<App> {
-  String initialRouteName;
+  late String initialRouteName;
   // Set default `_initialized` and `_error` state to false
   bool _initialized = false;
   bool _error = false;
@@ -80,7 +80,7 @@ class _AppState extends State<App> {
     firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
     // Running the main app
     return MaterialApp(
-      home: Lander(authInstance: auth,),
+      home: Lander(authInstance: auth, storageInstance: storage,),
       routes: {
         '/Home': (context) => Home(authInstance: auth, storageInstance: storage,),
         '/DogProfile': (context) => DogProfile(),
@@ -88,6 +88,7 @@ class _AppState extends State<App> {
         '/SaveADog': (context) => SaveADog(),
         '/Login': (context) => Login(authInstance: auth,),
         '/SignUp': (context) => SignUp(authInstance: auth,),
+        ExtractArguments.routeName: (context) => ExtractArguments(),
       },
     );
   }

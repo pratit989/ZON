@@ -11,17 +11,16 @@ class TakePictureScreen extends StatefulWidget {
   final CameraDescription camera;
 
   const TakePictureScreen({
-    Key key,
-    @required this.camera,
-  }) : super(key: key);
+    required this.camera,
+  });
 
   @override
   TakePictureScreenState createState() => TakePictureScreenState();
 }
 
 class TakePictureScreenState extends State<TakePictureScreen> {
-  CameraController _controller;
-  Future<void> _initializeControllerFuture;
+  late CameraController _controller;
+  late Future<void> _initializeControllerFuture;
 
   @override
   void initState() {
@@ -115,7 +114,7 @@ class DisplayPictureScreen extends StatelessWidget {
   final String imagePath;
   final _formKey = GlobalKey<FormState>();
 
-  DisplayPictureScreen({Key key, this.imagePath}) : super(key: key);
+  DisplayPictureScreen({required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +157,7 @@ class DisplayPictureScreen extends StatelessWidget {
                                 textCapitalization: TextCapitalization.words,
                                 style: TextStyle(color: Colors.red[300]),
                                 validator: (value) {
-                                  if (value.isEmpty) {
+                                  if (value!.isEmpty) {
                                     return 'Please enter some text';
                                   }
                                   return null;
@@ -174,7 +173,7 @@ class DisplayPictureScreen extends StatelessWidget {
                               child: Icon(Icons.done, size: MediaQuery.of(context).size.width*0.1, color: Colors.white,),
                               // Provide an onPressed callback.
                               onPressed: () {
-                                if (_formKey.currentState.validate()) {
+                                if (_formKey.currentState!.validate()) {
                                   // If the form is valid, display a Snackbar.
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(SnackBar(content: Text('Processing Data')));

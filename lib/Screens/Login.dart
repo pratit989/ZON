@@ -5,16 +5,15 @@ class Login extends StatefulWidget {
   final FirebaseAuth authInstance;
 
   Login({
-    Key key,
-    @required this.authInstance,
-  }) : super(key: key);
+    required this.authInstance,
+  });
   @override
   _LoginState createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
-  String password;
-  String email;
+  late String password;
+  late String email;
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   //
@@ -81,7 +80,7 @@ class _LoginState extends State<Login> {
                               ),
                               child: TextFormField(
                                 validator: (value) {
-                                  if(value.isEmpty || value == 'Email') {
+                                  if(value!.isEmpty || value == 'Email') {
                                     return 'Please enter a valid email address.';
                                   } else {email = value;}
                                   return null;
@@ -102,7 +101,7 @@ class _LoginState extends State<Login> {
                               ),
                               child: TextFormField(
                                 validator: (value) {
-                                  if(value.isEmpty || value == 'Password') {
+                                  if(value!.isEmpty || value == 'Password') {
                                     return 'Please enter a valid password.';
                                   } else {password = value;}
                                   return null;
@@ -142,7 +141,7 @@ class _LoginState extends State<Login> {
                               padding: EdgeInsets.only(top: MediaQuery.of(context).size.height*0.04, bottom: MediaQuery.of(context).size.height*0.04),
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  if (_loginKey.currentState.validate()) {
+                                  if (_loginKey.currentState!.validate()) {
                                     try {
                                       await FirebaseAuth.instance.signInWithEmailAndPassword(
                                           email: email,

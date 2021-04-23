@@ -23,7 +23,7 @@ class _SaveADogState extends State<SaveADog> {
           children: <Widget>[
             TextFormField(
               validator: (value) {
-                if (value.isEmpty) {
+                if (value!.isEmpty) {
                   return 'Please enter some text';
                 }
                 return null;
@@ -35,7 +35,7 @@ class _SaveADogState extends State<SaveADog> {
                 onPressed: () {
                   // Validate returns true if the form is valid, or false
                   // otherwise.
-                  if (_formKey.currentState.validate()) {
+                  if (_formKey.currentState!.validate()) {
                     // If the form is valid, display a Snackbar.
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(content: Text('Processing Data')));
