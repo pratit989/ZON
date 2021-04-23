@@ -17,6 +17,7 @@ class Home extends StatefulWidget {
 }
 
 class _DogHelpState extends State<Home> {
+  // Download URL for profile picture
   late String profileURL;
   // Set default `_initialized` and `_error` state to false
   bool _initialized = false;
@@ -49,10 +50,6 @@ class _DogHelpState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    void fun() {
-      setState(() {});
-    }
-    fun();
     // Show error message if initialization failed
     if(_error) {
       return Text('Something went wrong');
@@ -85,9 +82,9 @@ class _DogHelpState extends State<Home> {
                               context,
                               ExtractArguments.routeName,
                               arguments:PictureDisplay(
-                                  profileURL,
-                                  widget.authInstance,
-                                  widget.storageInstance,
+                                  url: profileURL,
+                                  auth: widget.authInstance,
+                                  storage: widget.storageInstance,
                               )
                           );
                           initializeProfile();

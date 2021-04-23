@@ -10,19 +10,26 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:path_provider/path_provider.dart';
 
+class DatabaseFunctions {
+  final firebase_storage.FirebaseStorage storage;
+  DatabaseFunctions(this.storage);
+}
+
 class ExtractArguments extends StatelessWidget {
   static const routeName = '/extractArguments';
 
   @override
   Widget build(BuildContext context) {
     final PictureDisplay args = ModalRoute.of(context)!.settings.arguments as PictureDisplay;
+    final PictureDisplay functions = PictureDisplay();
+    final String profilePicturePath = 'users/' + args.auth!.currentUser!.uid + '/1p.jpg';
     return Container(
       height: MediaQuery.of(context).size.height*0.1,
       width: MediaQuery.of(context).size.width*0.1,
       child: Scaffold(
           backgroundColor: Colors.black87,
           appBar: AppBar(
-            title: Text(args.auth.currentUser!.displayName!),
+            title: Text(args.auth!.currentUser!.displayName!),
             backgroundColor: Colors.black87,
           ),
           bottomNavigationBar: BottomAppBar(
@@ -34,20 +41,14 @@ class ExtractArguments extends StatelessWidget {
                   onPressed: () async {
                   FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-                  Future<File> compressFile(File file) async{
-                    File compressedFile = await FlutterNativeImage.compressImage(file.path,
-                      quality: 50,);
-                    return compressedFile;
-                  }
-
                   if(result != null) {
                     File file = File(result.files.single.path!);
-                    File compressed = await compressFile(file);
+                    File compressed = await functions.compressFile(file);
                     try {
                       ScaffoldMessenger.of(context)
                           .showSnackBar(SnackBar(content: Text('Uploading Image')));
-                      await args.storage
-                          .ref('users/' + args.auth.currentUser!.uid + '/1p.jpg')
+                      await args.storage!
+                          .ref(profilePicturePath)
                           .putFile(compressed);
                       Navigator.pop(context);
                     } on firebase_core.FirebaseException catch (e) {
@@ -61,21 +62,16 @@ class ExtractArguments extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () async {
-                    Future<File> getImageFileFromAssets(String path) async {
-                      final byteData = await rootBundle.load('assets/$path');
 
-                      final file = File('${(await getTemporaryDirectory()).path}/$path');
-                      await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
-
-                      return file;
-                    }
-                    File defaultImg = await getImageFileFromAssets('1p.jpg');
+                    File defaultImg = await functions.compressFile(
+                        await functions.getImageFileFromAssets('1p.jpg')
+                    );
 
                     try {
                       ScaffoldMessenger.of(context)
                           .showSnackBar(SnackBar(content: Text('Deleting Image')));
-                      await args.storage
-                          .ref('users/' + args.auth.currentUser!.uid + '/1p.jpg')
+                      await args.storage!
+                          .ref(profilePicturePath)
                           .putFile(defaultImg);
                       Navigator.pop(context);
                     } on firebase_core.FirebaseException catch (e) {
@@ -88,7 +84,7 @@ class ExtractArguments extends StatelessWidget {
               ],
             ),
           ),
-          body: Center(child: Image.network(args.url))
+          body: Center(child: Image.network(args.url!))
       ),
     );
   }
@@ -96,9 +92,24 @@ class ExtractArguments extends StatelessWidget {
 
 
 class PictureDisplay {
-  late final String url;
-  final FirebaseAuth auth;
-  final firebase_storage.FirebaseStorage storage;
+  late final String? url;
+  final FirebaseAuth? auth;
+  final firebase_storage.FirebaseStorage? storage;
 
-  PictureDisplay(this.url, this.auth, this.storage);
+  Future<File> compressFile(File file) async{
+    File compressedFile = await FlutterNativeImage.compressImage(file.path,
+      quality: 50,);
+    return compressedFile;
+  }
+
+  Future<File> getImageFileFromAssets(String path) async {
+    final byteData = await rootBundle.load('assets/$path');
+
+    final file = File('${(await getTemporaryDirectory()).path}/$path');
+    await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+
+    return file;
+  }
+
+  PictureDisplay({this.url, this.auth, this.storage});
 }
