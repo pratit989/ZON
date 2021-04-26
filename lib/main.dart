@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dog_help_demo/Screens/ProfilePage.dart';
 import 'package:dog_help_demo/Screens/ProfilePicture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,7 +12,7 @@ import 'package:dog_help_demo/Screens/Home.dart';
 import 'package:dog_help_demo/Screens/DogProfile.dart';
 import 'package:camera/camera.dart';
 import 'package:dog_help_demo/Screens/Lander.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,18 +78,19 @@ class _AppState extends State<App> {
     // initialisation of Firebase Authentication
     FirebaseAuth auth = FirebaseAuth.instance;
     // initialisation of Firebase Storage
-    firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
+    FirebaseStorage storage = FirebaseStorage.instance;
     // Running the main app
     return MaterialApp(
       home: Lander(authInstance: auth, storageInstance: storage,),
       routes: {
-        '/Home': (context) => Home(authInstance: auth, storageInstance: storage,),
+        '/Home': (context) => Home(authInstance: auth, storageInstance: storage),
         '/DogProfile': (context) => DogProfile(),
         '/Camera': (context) => TakePictureScreen(camera: widget.camera),
         '/SaveADog': (context) => SaveADog(),
-        '/Login': (context) => Login(authInstance: auth,),
-        '/SignUp': (context) => SignUp(authInstance: auth,),
+        '/Login': (context) => Login(authInstance: auth),
+        '/SignUp': (context) => SignUp(authInstance: auth, storageInstance: storage),
         ExtractArguments.routeName: (context) => ExtractArguments(),
+        '/ProfilePage': (context) => ProfilePage(authInstance: auth, storageInstance: storage),
       },
     );
   }

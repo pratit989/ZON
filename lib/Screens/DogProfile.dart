@@ -33,9 +33,9 @@ class _DogHelpState extends State<DogProfile> {
                       top: MediaQuery.of(context).size.height*0.55,
                     ),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(50)),
-                      color: Colors.white
-                    ),
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(50)),
+                        color: Colors.white),
                     height: MediaQuery.of(context).size.height,
                     child: Stack(
                       children: [

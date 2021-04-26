@@ -5,7 +5,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
   final CameraDescription camera;
@@ -77,7 +76,11 @@ class TakePictureScreenState extends State<TakePictureScreen> {
           child: RawMaterialButton(
             fillColor: Colors.red[300],
             padding: EdgeInsets.all(10),
-            child: Icon(Icons.camera_alt, size: 40, color: Colors.white,),
+            child: Icon(
+              Icons.camera_alt,
+              size: 40,
+              color: Colors.white,
+            ),
             // Provide an onPressed callback.
             onPressed: () async {
               // Take the Picture in a try / catch block. If anything goes wrong,
@@ -86,7 +89,6 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                 // Ensure that the camera is initialized.
                 await _initializeControllerFuture;
 
-
                 // Attempt to take a picture and log where it's been saved.
                 XFile file = await _controller.takePicture();
 
@@ -94,7 +96,8 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DisplayPictureScreen(imagePath: file.path),
+                    builder: (context) =>
+                        DisplayPictureScreen(imagePath: file.path),
                   ),
                 );
               } catch (e) {
@@ -121,7 +124,10 @@ class DisplayPictureScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black87,
-        title: Text('Save A Dog', style: TextStyle(color: Colors.red[300]),),
+        title: Text(
+          'Save A Dog',
+          style: TextStyle(color: Colors.red[300]),
+        ),
       ),
       body: Stack(
         alignment: Alignment.bottomCenter,
@@ -129,13 +135,10 @@ class DisplayPictureScreen extends StatelessWidget {
           Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
-            child: Image.file(
-                File(imagePath),
-              fit: BoxFit.fill
-              ),
+            child: Image.file(File(imagePath), fit: BoxFit.fill),
           ),
           Container(
-            height: MediaQuery.of(context).size.height*0.1,
+            height: MediaQuery.of(context).size.height * 0.1,
             child: Scaffold(
               body: Builder(
                 builder: (context) {
@@ -149,7 +152,13 @@ class DisplayPictureScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('Location: ', style: TextStyle(color: Colors.white,fontSize: MediaQuery.of(context).size.width*0.05),),
+                          Text(
+                            'Location: ',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.05),
+                          ),
                           Expanded(
                             child: Container(
                               child: TextFormField(
@@ -166,17 +175,22 @@ class DisplayPictureScreen extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            width: MediaQuery.of(context).size.width*0.1,
+                            width: MediaQuery.of(context).size.width * 0.1,
                             child: RawMaterialButton(
                               fillColor: Colors.transparent,
                               elevation: 0,
-                              child: Icon(Icons.done, size: MediaQuery.of(context).size.width*0.1, color: Colors.white,),
+                              child: Icon(
+                                Icons.done,
+                                size: MediaQuery.of(context).size.width * 0.1,
+                                color: Colors.white,
+                              ),
                               // Provide an onPressed callback.
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
                                   // If the form is valid, display a Snackbar.
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(content: Text('Processing Data')));
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text('Processing Data')));
                                 }
                               },
                             ),

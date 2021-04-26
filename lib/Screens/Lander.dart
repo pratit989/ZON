@@ -13,6 +13,7 @@ class Lander extends StatefulWidget {
     required this.authInstance,
     required this.storageInstance,
   });
+
   @override
   _LanderState createState() => _LanderState();
 }
@@ -21,7 +22,9 @@ class _LanderState extends State<Lander> {
   @override
   Widget build(BuildContext context) {
     if (widget.authInstance.currentUser != null) {
-      return Home(authInstance: widget.authInstance, storageInstance: widget.storageInstance);
+      return Home(
+          authInstance: widget.authInstance,
+          storageInstance: widget.storageInstance);
     } else {
       return Login(authInstance: widget.authInstance);
     }

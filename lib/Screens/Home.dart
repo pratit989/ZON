@@ -1,40 +1,50 @@
+import 'package:dog_help_demo/Backend/FirebaseStorageManager.dart';
 import 'package:dog_help_demo/Screens/ProfilePicture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-
+import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
-  final List<String> list = ['Healing Hearts', 'Woof Project Rescue', 'Applied Animal', 'Small Paws'];
+  final List<String> list = [
+    'Healing Hearts',
+    'Woof Project Rescue',
+    'Applied Animal',
+    'Small Paws'
+  ];
   final FirebaseAuth authInstance;
   final firebase_storage.FirebaseStorage storageInstance;
 
   Home({
-    required this.authInstance, required this.storageInstance,
+    required this.authInstance,
+    required this.storageInstance,
   });
+
   @override
   _DogHelpState createState() => _DogHelpState();
 }
 
 class _DogHelpState extends State<Home> {
+  late final FirebaseStorageManager storageManager = FirebaseStorageManager(
+      storageInstance: widget.storageInstance,
+      authInstance: widget.authInstance);
+
   // Download URL for profile picture
   late String profileURL;
+
   // Set default `_initialized` and `_error` state to false
   bool _initialized = false;
   bool _error = false;
 
-  // Define an async function to initialize FlutterFire
+  // Define an async function to get Download URL for Profile Picture
   void initializeProfile() async {
     try {
-      // Wait for Firebase to initialize and set `_initialized` state to true
-      print('users/' + widget.authInstance.currentUser!.uid + '/1p.jpg');
-      profileURL =  await widget.storageInstance
-          .ref('users/' + widget.authInstance.currentUser!.uid + '/1p.jpg')
-          .getDownloadURL();
+      // Wait to get Download URl for Profile Picture
+      profileURL = await storageManager
+          .getDownloadURL(storageManager.profilePictureReferenceURL);
       setState(() {
         _initialized = true;
       });
-    } catch(e) {
+    } catch (e) {
       // Set `_error` state to true if Firebase initialization fails
       setState(() {
         _error = true;
@@ -51,7 +61,7 @@ class _DogHelpState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     // Show error message if initialization failed
-    if(_error) {
+    if (_error) {
       return Text('Something went wrong');
     }
 
@@ -66,9 +76,8 @@ class _DogHelpState extends State<Home> {
           color: Colors.black87,
           child: ListView(
             padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.height*0.04,
-                vertical: MediaQuery.of(context).size.height*0.1
-            ),
+                horizontal: MediaQuery.of(context).size.height * 0.04,
+                vertical: MediaQuery.of(context).size.height * 0.1),
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,14 +88,12 @@ class _DogHelpState extends State<Home> {
                         onTap: () async {
                           print('tapped');
                           await Navigator.pushNamed(
-                              context,
-                              ExtractArguments.routeName,
-                              arguments:PictureDisplay(
-                                  url: profileURL,
-                                  auth: widget.authInstance,
-                                  storage: widget.storageInstance,
-                              )
-                          );
+                              context, ExtractArguments.routeName,
+                              arguments: PictureDisplay(
+                                url: profileURL,
+                                auth: widget.authInstance,
+                                storage: widget.storageInstance,
+                              ));
                           initializeProfile();
                           setState(() {});
                         },
@@ -107,15 +114,15 @@ class _DogHelpState extends State<Home> {
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500,
-                                fontSize: MediaQuery.of(context).size.width*0.08,
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.08,
                               ),
                             ),
                             Text(
                               'Saviour',
                               style: TextStyle(
                                   color: Colors.red[300],
-                                  fontWeight: FontWeight.w300
-                              ),
+                                  fontWeight: FontWeight.w300),
                             ),
                           ],
                         ),
@@ -123,31 +130,28 @@ class _DogHelpState extends State<Home> {
                     ],
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height*0.1,
+                    height: MediaQuery.of(context).size.height * 0.1,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       FloatingActionButton.extended(
-                        heroTag: 'home',
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        backgroundColor: Colors.transparent,
-                        elevation: 0,
-                        icon: Icon(
-                          Icons.home,
-                          color: Colors.white,
-                        ),
-                        label: Text(
-                          'Home',
-                          style: TextStyle(
-                              color: Colors.white
+                          heroTag: 'home',
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          icon: Icon(
+                            Icons.home,
+                            color: Colors.white,
                           ),
-                        )
-                      ),
+                          label: Text(
+                            'Home',
+                            style: TextStyle(color: Colors.white),
+                          )),
                       FloatingActionButton.extended(
-                        heroTag: 'save a dog',
+                          heroTag: 'save a dog',
                           onPressed: () {
                             Navigator.pushNamed(context, '/Camera');
                           },
@@ -159,13 +163,10 @@ class _DogHelpState extends State<Home> {
                           ),
                           label: Text(
                             'Save a Dog',
-                            style: TextStyle(
-                                color: Colors.white
-                            ),
-                          )
-                      ),
+                            style: TextStyle(color: Colors.white),
+                          )),
                       FloatingActionButton.extended(
-                        heroTag: 'add NGO',
+                          heroTag: 'add NGO',
                           onPressed: () {},
                           backgroundColor: Colors.transparent,
                           elevation: 0,
@@ -175,13 +176,10 @@ class _DogHelpState extends State<Home> {
                           ),
                           label: Text(
                             'Add a new NGO',
-                            style: TextStyle(
-                                color: Colors.white
-                            ),
-                          )
-                      ),
+                            style: TextStyle(color: Colors.white),
+                          )),
                       FloatingActionButton.extended(
-                        heroTag: 'Messages',
+                          heroTag: 'Messages',
                           onPressed: () {},
                           backgroundColor: Colors.transparent,
                           elevation: 0,
@@ -191,14 +189,13 @@ class _DogHelpState extends State<Home> {
                           ),
                           label: Text(
                             'Messages',
-                            style: TextStyle(
-                                color: Colors.white
-                            ),
-                          )
-                      ),
+                            style: TextStyle(color: Colors.white),
+                          )),
                       FloatingActionButton.extended(
-                        heroTag: 'profile',
-                          onPressed: () {},
+                          heroTag: 'profile',
+                          onPressed: () async {
+                            await Navigator.pushNamed(context, '/ProfilePage');
+                          },
                           backgroundColor: Colors.transparent,
                           elevation: 0,
                           icon: Icon(
@@ -207,20 +204,17 @@ class _DogHelpState extends State<Home> {
                           ),
                           label: Text(
                             'Profile',
-                            style: TextStyle(
-                                color: Colors.white
-                            ),
-                          )
-                      ),
+                            style: TextStyle(color: Colors.white),
+                          )),
                     ],
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height*0.26,
+                    height: MediaQuery.of(context).size.height * 0.26,
                   ),
                   Row(
                     children: [
                       FloatingActionButton.extended(
-                        heroTag: 'settings',
+                          heroTag: 'settings',
                           onPressed: () {},
                           backgroundColor: Colors.transparent,
                           elevation: 0,
@@ -230,16 +224,11 @@ class _DogHelpState extends State<Home> {
                           ),
                           label: Text(
                             'Settings',
-                            style: TextStyle(
-                                color: Colors.white
-                            ),
-                          )
-                      ),
+                            style: TextStyle(color: Colors.white),
+                          )),
                       Text(
                         '|',
-                        style: TextStyle(
-                          color: Colors.white
-                        ),
+                        style: TextStyle(color: Colors.white),
                       ),
                       FloatingActionButton.extended(
                           onPressed: () async {
@@ -251,11 +240,8 @@ class _DogHelpState extends State<Home> {
                           icon: null,
                           label: Text(
                             'Log Out',
-                            style: TextStyle(
-                                color: Colors.white
-                            ),
-                          )
-                      ),
+                            style: TextStyle(color: Colors.white),
+                          )),
                     ],
                   )
                 ],
@@ -297,7 +283,7 @@ class _DogHelpState extends State<Home> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          width: MediaQuery.of(context).size.width*0.9,
+                          width: MediaQuery.of(context).size.width * 0.9,
                           child: Stack(
                             children: [
                               ButtonTheme(
@@ -305,7 +291,8 @@ class _DogHelpState extends State<Home> {
                                 buttonColor: Colors.transparent,
                                 child: OutlineButton(
                                   borderSide: BorderSide(color: Colors.black),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50)),
                                   onPressed: () {
                                     showSearch(
                                       context: context,
@@ -313,13 +300,12 @@ class _DogHelpState extends State<Home> {
                                     );
                                   },
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         "Search NGO's",
-                                        style: TextStyle(
-                                          color: Colors.grey
-                                        ),
+                                        style: TextStyle(color: Colors.grey),
                                       ),
                                       Icon(Icons.search)
                                     ],
@@ -351,14 +337,14 @@ class _DogHelpState extends State<Home> {
                                       style: TextStyle(
                                         fontFamily: 'Roboto',
                                         fontWeight: FontWeight.w900,
-                                        fontSize: MediaQuery.of(context).size.width * 0.1,
+                                        fontSize:
+                                            MediaQuery.of(context).size.width *
+                                                0.1,
                                       ),
                                     ),
                                     Text(
                                       'Each new day, A new life saved!!',
-                                      style: TextStyle(
-                                          color: Colors.grey[600]
-                                      ),
+                                      style: TextStyle(color: Colors.grey[600]),
                                     ),
                                   ],
                                 ),
@@ -367,38 +353,43 @@ class _DogHelpState extends State<Home> {
                             Expanded(
                               flex: 34,
                               child: Container(
-                                height: MediaQuery.of(context).size.height * 0.25,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.25,
                                 child: ListView(
                                   scrollDirection: Axis.horizontal,
                                   children: [
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Stack(
                                           children: [
                                             InkWell(
                                               onTap: () {
-                                                Navigator.pushNamed(context, '/DogProfile');
+                                                Navigator.pushNamed(
+                                                    context, '/DogProfile');
                                               },
                                               child: Container(
                                                 margin: EdgeInsets.all(10),
                                                 child: ClipRRect(
-                                                    borderRadius: BorderRadius.circular(20),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
                                                     child: Image(
-                                                      image: AssetImage('assets/1.jpg'),
-                                                    )
-                                                ),
+                                                      image: AssetImage(
+                                                          'assets/1.jpg'),
+                                                    )),
                                               ),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(20.0),
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
                                               child: Text(
                                                 'Dog 1',
                                                 style: TextStyle(
                                                     fontFamily: 'Roboto',
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.white
-                                                ),
+                                                    color: Colors.white),
                                               ),
                                             )
                                           ],
@@ -408,21 +399,22 @@ class _DogHelpState extends State<Home> {
                                             Container(
                                               margin: EdgeInsets.all(10),
                                               child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(20),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                   child: Image(
-                                                    image: AssetImage('assets/2.jpg'),
-                                                  )
-                                              ),
+                                                    image: AssetImage(
+                                                        'assets/2.jpg'),
+                                                  )),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(20.0),
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
                                               child: Text(
                                                 'Dog 2',
                                                 style: TextStyle(
                                                     fontFamily: 'Roboto',
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.white
-                                                ),
+                                                    color: Colors.white),
                                               ),
                                             )
                                           ],
@@ -432,21 +424,22 @@ class _DogHelpState extends State<Home> {
                                             Container(
                                               margin: EdgeInsets.all(10),
                                               child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(20),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                   child: Image(
-                                                    image: AssetImage('assets/3.jpg'),
-                                                  )
-                                              ),
+                                                    image: AssetImage(
+                                                        'assets/3.jpg'),
+                                                  )),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(20.0),
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
                                               child: Text(
                                                 'Dog 3',
                                                 style: TextStyle(
                                                     fontFamily: 'Roboto',
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.white
-                                                ),
+                                                    color: Colors.white),
                                               ),
                                             )
                                           ],
@@ -456,21 +449,22 @@ class _DogHelpState extends State<Home> {
                                             Container(
                                               margin: EdgeInsets.all(10),
                                               child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(20),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                   child: Image(
-                                                    image: AssetImage('assets/4.jpg'),
-                                                  )
-                                              ),
+                                                    image: AssetImage(
+                                                        'assets/4.jpg'),
+                                                  )),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(20.0),
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
                                               child: Text(
                                                 'Dog 4',
                                                 style: TextStyle(
                                                     fontFamily: 'Roboto',
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.white
-                                                ),
+                                                    color: Colors.white),
                                               ),
                                             )
                                           ],
@@ -490,7 +484,8 @@ class _DogHelpState extends State<Home> {
                                   style: TextStyle(
                                     fontFamily: 'Roboto',
                                     fontWeight: FontWeight.w900,
-                                    fontSize: MediaQuery.of(context).size.width * 0.1,
+                                    fontSize:
+                                        MediaQuery.of(context).size.width * 0.1,
                                   ),
                                 ),
                               ),
@@ -498,24 +493,30 @@ class _DogHelpState extends State<Home> {
                             Expanded(
                               flex: 34,
                               child: Container(
-                                height: MediaQuery.of(context).size.height * 0.25,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.25,
                                 child: ListView(
                                   scrollDirection: Axis.horizontal,
                                   children: [
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Stack(
                                           children: [
                                             Container(
-                                              height: MediaQuery.of(context).size.height * 0.3,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.3,
                                               margin: EdgeInsets.all(10),
                                               child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(20),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                   child: Image(
-                                                    image: AssetImage('assets/1n.jpg'),
-                                                  )
-                                              ),
+                                                    image: AssetImage(
+                                                        'assets/1n.jpg'),
+                                                  )),
                                             ),
                                             Padding(
                                               padding: EdgeInsets.all(20.0),
@@ -524,8 +525,7 @@ class _DogHelpState extends State<Home> {
                                                 style: TextStyle(
                                                     fontFamily: 'Roboto',
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.white
-                                                ),
+                                                    color: Colors.white),
                                               ),
                                             )
                                           ],
@@ -533,24 +533,28 @@ class _DogHelpState extends State<Home> {
                                         Stack(
                                           children: [
                                             Container(
-                                              height: MediaQuery.of(context).size.height * 0.3,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.3,
                                               margin: EdgeInsets.all(10),
                                               child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(20),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                   child: Image(
-                                                    image: AssetImage('assets/2n.jpg'),
-                                                  )
-                                              ),
+                                                    image: AssetImage(
+                                                        'assets/2n.jpg'),
+                                                  )),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(20.0),
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
                                               child: Text(
                                                 'Dog 2',
                                                 style: TextStyle(
                                                     fontFamily: 'Roboto',
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.white
-                                                ),
+                                                    color: Colors.white),
                                               ),
                                             )
                                           ],
@@ -558,24 +562,28 @@ class _DogHelpState extends State<Home> {
                                         Stack(
                                           children: [
                                             Container(
-                                              height: MediaQuery.of(context).size.height * 0.3,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.3,
                                               margin: EdgeInsets.all(10),
                                               child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(20),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                   child: Image(
-                                                    image: AssetImage('assets/3n.png'),
-                                                  )
-                                              ),
+                                                    image: AssetImage(
+                                                        'assets/3n.png'),
+                                                  )),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(20.0),
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
                                               child: Text(
                                                 'Dog 3',
                                                 style: TextStyle(
                                                     fontFamily: 'Roboto',
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.white
-                                                ),
+                                                    color: Colors.white),
                                               ),
                                             )
                                           ],
@@ -583,24 +591,28 @@ class _DogHelpState extends State<Home> {
                                         Stack(
                                           children: [
                                             Container(
-                                              height: MediaQuery.of(context).size.height * 0.3,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.3,
                                               margin: EdgeInsets.all(10),
                                               child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(20),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                   child: Image(
-                                                    image: AssetImage('assets/4n.jpg'),
-                                                  )
-                                              ),
+                                                    image: AssetImage(
+                                                        'assets/4n.jpg'),
+                                                  )),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(20.0),
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
                                               child: Text(
                                                 'Dog 4',
                                                 style: TextStyle(
                                                     fontFamily: 'Roboto',
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.white
-                                                ),
+                                                    color: Colors.white),
                                               ),
                                             )
                                           ],
@@ -621,7 +633,9 @@ class _DogHelpState extends State<Home> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
+                            margin: EdgeInsets.symmetric(
+                                horizontal:
+                                    MediaQuery.of(context).size.width * 0.04),
                             height: MediaQuery.of(context).size.height * 0.2,
                             width: MediaQuery.of(context).size.width * 0.85,
                             decoration: BoxDecoration(
@@ -629,68 +643,90 @@ class _DogHelpState extends State<Home> {
                               color: Colors.black87,
                             ),
                             child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
+                              margin: EdgeInsets.symmetric(
+                                  horizontal:
+                                      MediaQuery.of(context).size.width * 0.04),
                               alignment: Alignment.centerLeft,
                               child: TextButton.icon(
                                   onPressed: () {},
                                   icon: Icon(
                                     Icons.add,
                                     color: Colors.red[400],
-                                    size: MediaQuery.of(context).size.width * 0.15,
+                                    size: MediaQuery.of(context).size.width *
+                                        0.15,
                                   ),
                                   label: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Container(
-                                        width: MediaQuery.of(context).size.width * 0.5,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.5,
                                         child: Text(
                                           'Join today & Save lives',
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: MediaQuery.of(context).size.width * 0.045,
+                                            fontSize: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.045,
                                             fontWeight: FontWeight.w900,
                                           ),
                                         ),
                                       ),
                                       Container(
-                                        width: MediaQuery.of(context).size.width * 0.5,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.5,
                                         child: Text(
                                           'It only takes one tap. Take a picture and become a hero. '
-                                              'Send a call for help now to your nearest NGO',
+                                          'Send a call for help now to your nearest NGO',
                                           softWrap: true,
                                           style: TextStyle(
                                             color: Colors.grey[300],
                                             fontWeight: FontWeight.w300,
-                                            fontSize:  MediaQuery.of(context).size.height * 0.015,
+                                            fontSize: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.015,
                                           ),
                                         ),
                                       ),
                                       TextButton(
                                         onPressed: () {},
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
                                           children: [
                                             Text(
                                               'Donate now',
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontWeight: FontWeight.w500,
-                                                  fontSize: MediaQuery.of(context).size.height * 0.02
-                                              ),
+                                                  fontSize:
+                                                      MediaQuery.of(context)
+                                                              .size
+                                                              .height *
+                                                          0.02),
                                             ),
                                             Icon(
                                               Icons.arrow_forward_ios,
                                               color: Colors.white,
-                                              size: MediaQuery.of(context).size.height * 0.02,
+                                              size: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.02,
                                             ),
                                           ],
                                         ),
                                       )
                                     ],
-                                  )
-                              ),
+                                  )),
                             ),
                           ),
                         ],
@@ -707,9 +743,23 @@ class _DogHelpState extends State<Home> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(icon: Icon(Icons.notifications), onPressed: () {}, iconSize: 35,),
-            IconButton(icon: Icon(Icons.camera), onPressed: () {Navigator.pushNamed(context, '/Camera');}, iconSize: 35,),
-            IconButton(icon: Icon(Icons.person), onPressed: () {}, iconSize: 35,),
+            IconButton(
+              icon: Icon(Icons.notifications),
+              onPressed: () {},
+              iconSize: 35,
+            ),
+            IconButton(
+              icon: Icon(Icons.camera),
+              onPressed: () {
+                Navigator.pushNamed(context, '/Camera');
+              },
+              iconSize: 35,
+            ),
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {},
+              iconSize: 35,
+            ),
           ],
         ),
       ),
@@ -752,9 +802,15 @@ class Search extends SearchDelegate {
   }
 
   final List<String> listExample;
+
   Search(this.listExample);
 
-  List<String> recentList = ['Healing Hearts', 'Woof Project Rescue', 'Applied Animal', 'Small Paws'];
+  List<String> recentList = [
+    'Healing Hearts',
+    'Woof Project Rescue',
+    'Applied Animal',
+    'Small Paws'
+  ];
 
   @override
   Widget buildSuggestions(BuildContext context) {
@@ -762,9 +818,9 @@ class Search extends SearchDelegate {
     query.isEmpty
         ? suggestionList = recentList //In the true case
         : suggestionList.addAll(listExample.where(
-      // In the false case
-          (element) => element.contains(query),
-    ));
+            // In the false case
+            (element) => element.contains(query),
+          ));
 
     return ListView.builder(
       itemCount: suggestionList.length,
@@ -774,7 +830,7 @@ class Search extends SearchDelegate {
             suggestionList[index],
           ),
           leading: query.isEmpty ? Icon(Icons.access_time) : SizedBox(),
-          onTap: (){
+          onTap: () {
             selectedResult = suggestionList[index];
             showResults(context);
           },
