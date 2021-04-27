@@ -288,11 +288,12 @@ class _LoginState extends State<SignUp> {
                                           displayName: name,
                                           photoURL: storageManager
                                               .profilePictureReferenceURL);
-                                      AddUser(
-                                          name,
-                                          selectedUser!.name,
-                                          int.parse(phoneNumber),
-                                          widget.authInstance).addUser();
+                                      FirestoreManager(
+                                        name: name,
+                                        userType: selectedUser!.name,
+                                        phoneNo: int.parse(phoneNumber),
+                                        authInstance: widget.authInstance
+                                      ).addUser();
                                       Navigator.pushReplacementNamed(
                                           context, '/Login');
                                     } on FirebaseAuthException catch (e) {

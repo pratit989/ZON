@@ -1,4 +1,5 @@
 import 'package:dog_help_demo/Backend/FirebaseStorageManager.dart';
+import 'package:dog_help_demo/Backend/FirestoreManager.dart';
 import 'package:dog_help_demo/Screens/ProfilePicture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -28,6 +29,12 @@ class _DogHelpState extends State<Home> {
       storageInstance: widget.storageInstance,
       authInstance: widget.authInstance);
 
+  late final FirestoreManager firestoreManager = FirestoreManager(
+    authInstance: widget.authInstance
+  );
+
+  Map <String, dynamic>? data;
+
   // Download URL for profile picture
   late String profileURL;
 
@@ -41,6 +48,7 @@ class _DogHelpState extends State<Home> {
       // Wait to get Download URl for Profile Picture
       profileURL = await storageManager
           .getDownloadURL(storageManager.profilePictureReferenceURL);
+      data = await firestoreManager.getUserData();
       setState(() {
         _initialized = true;
       });
@@ -119,7 +127,7 @@ class _DogHelpState extends State<Home> {
                               ),
                             ),
                             Text(
-                              'Saviour',
+                              data!['user_type'],
                               style: TextStyle(
                                   color: Colors.red[300],
                                   fontWeight: FontWeight.w300),
@@ -138,7 +146,7 @@ class _DogHelpState extends State<Home> {
                       FloatingActionButton.extended(
                           heroTag: 'home',
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.pushReplacementNamed(context, '/Home');
                           },
                           backgroundColor: Colors.transparent,
                           elevation: 0,
@@ -152,8 +160,9 @@ class _DogHelpState extends State<Home> {
                           )),
                       FloatingActionButton.extended(
                           heroTag: 'save a dog',
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/Camera');
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            await Navigator.pushNamed(context, '/Camera');
                           },
                           backgroundColor: Colors.transparent,
                           elevation: 0,
@@ -163,19 +172,6 @@ class _DogHelpState extends State<Home> {
                           ),
                           label: Text(
                             'Save a Dog',
-                            style: TextStyle(color: Colors.white),
-                          )),
-                      FloatingActionButton.extended(
-                          heroTag: 'add NGO',
-                          onPressed: () {},
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          icon: Icon(
-                            Icons.add_business,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'Add a new NGO',
                             style: TextStyle(color: Colors.white),
                           )),
                       FloatingActionButton.extended(
@@ -194,6 +190,7 @@ class _DogHelpState extends State<Home> {
                       FloatingActionButton.extended(
                           heroTag: 'profile',
                           onPressed: () async {
+                            Navigator.pop(context);
                             await Navigator.pushNamed(context, '/ProfilePage');
                           },
                           backgroundColor: Colors.transparent,
@@ -209,7 +206,7 @@ class _DogHelpState extends State<Home> {
                     ],
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.26,
+                    height: MediaQuery.of(context).size.height * 0.35,
                   ),
                   Row(
                     children: [
@@ -666,13 +663,13 @@ class _DogHelpState extends State<Home> {
                                             MediaQuery.of(context).size.width *
                                                 0.5,
                                         child: Text(
-                                          'Join today & Save lives',
+                                          'Donate today & Save lives',
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: MediaQuery.of(context)
                                                     .size
                                                     .width *
-                                                0.045,
+                                                0.0427,
                                             fontWeight: FontWeight.w900,
                                           ),
                                         ),
@@ -682,8 +679,8 @@ class _DogHelpState extends State<Home> {
                                             MediaQuery.of(context).size.width *
                                                 0.5,
                                         child: Text(
-                                          'It only takes one tap. Take a picture and become a hero. '
-                                          'Send a call for help now to your nearest NGO',
+                                          'Every donation counts. Make a small donation to a noble cause today. '
+                                          'Donate to your favourite NGO',
                                           softWrap: true,
                                           style: TextStyle(
                                             color: Colors.grey[300],
@@ -691,7 +688,7 @@ class _DogHelpState extends State<Home> {
                                             fontSize: MediaQuery.of(context)
                                                     .size
                                                     .height *
-                                                0.015,
+                                                0.016,
                                           ),
                                         ),
                                       ),
@@ -757,7 +754,9 @@ class _DogHelpState extends State<Home> {
             ),
             IconButton(
               icon: Icon(Icons.person),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, '/ProfilePage');
+              },
               iconSize: 35,
             ),
           ],

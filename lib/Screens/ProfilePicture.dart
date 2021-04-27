@@ -72,7 +72,7 @@ class ExtractArguments extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.info_outline),
                   onPressed: () async {
-                    await Navigator.pushNamed(context, '/ProfilePage');
+                    await Navigator.pushReplacementNamed(context, '/ProfilePage');
                   },
                   iconSize: 35,
                 ),
