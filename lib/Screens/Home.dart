@@ -3,6 +3,7 @@ import 'package:dog_help_demo/Backend/FirestoreManager.dart';
 import 'package:dog_help_demo/Screens/ProfilePicture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -29,11 +30,10 @@ class _DogHelpState extends State<Home> {
       storageInstance: widget.storageInstance,
       authInstance: widget.authInstance);
 
-  late final FirestoreManager firestoreManager = FirestoreManager(
-    authInstance: widget.authInstance
-  );
+  late final FirestoreManager firestoreManager =
+      FirestoreManager(authInstance: widget.authInstance);
 
-  Map <String, dynamic>? data;
+  Map<String, dynamic>? data;
 
   // Download URL for profile picture
   late String profileURL;
@@ -59,6 +59,10 @@ class _DogHelpState extends State<Home> {
       });
     }
   }
+
+  // Constants
+  IconData _likeIcon = Icons.favorite_border;
+  Color _color = Colors.white;
 
   @override
   void initState() {
@@ -248,10 +252,48 @@ class _DogHelpState extends State<Home> {
         ),
       ),
       appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Z',
+              style: TextStyle(color: Colors.black, fontSize: 30),
+            ),
+            Text(
+              'O',
+              style: TextStyle(
+                  color: Colors.orange,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w900),
+            ),
+            Text(
+              'N',
+              style: TextStyle(color: Colors.black, fontSize: 30),
+            ),
+          ],
+        ),
+        actions: [
+          Builder(builder: (context) {
+            return IconButton(
+              iconSize: MediaQuery.of(context).size.height * 0.04,
+              color: Colors.black,
+              icon: Icon(
+                Icons.search,
+              ),
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: Search(widget.list),
+                );
+              },
+              tooltip: 'Open end drawer',
+            );
+          })
+        ],
         leading: Builder(
           builder: (context) {
             return IconButton(
-              iconSize: MediaQuery.of(context).size.height * 0.06,
+              iconSize: MediaQuery.of(context).size.height * 0.04,
               color: Colors.black,
               icon: Icon(
                 Icons.menu_rounded,
@@ -259,7 +301,7 @@ class _DogHelpState extends State<Home> {
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
-              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              tooltip: 'Open Map',
             );
           },
         ),
@@ -268,43 +310,544 @@ class _DogHelpState extends State<Home> {
       ),
       body: SafeArea(
         child: Container(
-          height: MediaQuery.of(context).size.height,
-          child: ListView(
-            scrollDirection: Axis.vertical,
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          child: Stack(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+            gradient: LinearGradient(colors: [Colors.orange, Colors.white],begin: Alignment.topCenter, end: Alignment.bottomCenter),
+            boxShadow: [
+              const BoxShadow(
+                color: Colors.grey,
+              ),
+              const BoxShadow(
+                color: Colors.white,
+                offset: Offset(0, 2),
+                spreadRadius: -2.0,
+                blurRadius: 5.0,
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: ListView(
+              scrollDirection: Axis.vertical,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.05,
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 1.5,
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    children: [
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: PageView(
+                          children: [
+                            Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.black),
+                                        borderRadius: BorderRadius.circular(40),
+                                        color: Colors.black),
+                                    height: MediaQuery.of(context).size.height * 0.5,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(11.0),
+                                      child: Scaffold(
+                                        backgroundColor: Colors.black,
+                                        appBar: AppBar(
+                                          title: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                widget.authInstance.currentUser!.displayName!,
+                                                style: TextStyle(color: Colors.white),
+                                              ),
+                                              Text(
+                                                'Wadala (East)',
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          backgroundColor: Colors.black,
+                                          elevation: 0,
+                                          leading: GestureDetector(
+                                            onTap: () async {
+                                              await Navigator.pushNamed(
+                                                  context, ExtractArguments.routeName,
+                                                  arguments: PictureDisplay(
+                                                    url: profileURL,
+                                                    auth: widget.authInstance,
+                                                    storage: widget.storageInstance,
+                                                  ));
+                                              initializeProfile();
+                                              setState(() {});
+                                            },
+                                            child: CircleAvatar(
+                                              backgroundColor: Colors.transparent,
+                                              backgroundImage: NetworkImage(profileURL),
+                                            ),
+                                          ),
+                                        ),
+                                        body: Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 8.0, left: 8.0, right: 8.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(40),
+                                              image: DecorationImage(
+                                                  image: AssetImage('assets/1.jpg'),
+                                                  fit: BoxFit.fitWidth,
+                                                  alignment: Alignment.center),
+                                            ),
+                                          ),
+                                        ),
+                                        bottomNavigationBar: Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: [
+                                            GestureDetector(
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    if (_color == Colors.white) {
+                                                      _likeIcon = Icons.favorite;
+                                                      _color = Colors.red;
+                                                    } else {
+                                                      _likeIcon =
+                                                          Icons.favorite_outline;
+                                                      _color = Colors.white;
+                                                    }
+                                                  });
+                                                },
+                                                icon: Icon(
+                                                  _likeIcon,
+                                                  color: _color,
+                                                ),
+                                              ),
+                                              behavior: HitTestBehavior.translucent,
+                                            ),
+                                            IconButton(
+                                              onPressed: () {},
+                                              icon: Icon(Icons.mode_comment_outlined, color: Colors.white,),
+                                            ),
+                                            IconButton(
+                                              onPressed: () {},
+                                              icon: Icon(Icons.send, color: Colors.white,),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ))),
+                            Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.black),
+                                        borderRadius: BorderRadius.circular(40),
+                                        color: Colors.black),
+                                    height: MediaQuery.of(context).size.height * 0.5,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(11.0),
+                                      child: Scaffold(
+                                        backgroundColor: Colors.black,
+                                        appBar: AppBar(
+                                          title: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                widget.authInstance.currentUser!.displayName!,
+                                                style: TextStyle(color: Colors.white),
+                                              ),
+                                              Text(
+                                                'Wadala (East)',
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          backgroundColor: Colors.black,
+                                          elevation: 0,
+                                          leading: GestureDetector(
+                                            onTap: () async {
+                                              await Navigator.pushNamed(
+                                                  context, ExtractArguments.routeName,
+                                                  arguments: PictureDisplay(
+                                                    url: profileURL,
+                                                    auth: widget.authInstance,
+                                                    storage: widget.storageInstance,
+                                                  ));
+                                              initializeProfile();
+                                              setState(() {});
+                                            },
+                                            child: CircleAvatar(
+                                              backgroundColor: Colors.transparent,
+                                              backgroundImage: NetworkImage(profileURL),
+                                            ),
+                                          ),
+                                        ),
+                                        body: Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 8.0, left: 8.0, right: 8.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(40),
+                                              image: DecorationImage(
+                                                  image: AssetImage('assets/2.jpg'),
+                                                  fit: BoxFit.fitWidth,
+                                                  alignment: Alignment.center),
+                                            ),
+                                          ),
+                                        ),
+                                        bottomNavigationBar: Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: [
+                                            GestureDetector(
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    if (_color == Colors.white) {
+                                                      _likeIcon = Icons.favorite;
+                                                      _color = Colors.red;
+                                                    } else {
+                                                      _likeIcon =
+                                                          Icons.favorite_outline;
+                                                      _color = Colors.white;
+                                                    }
+                                                  });
+                                                },
+                                                icon: Icon(
+                                                  _likeIcon,
+                                                  color: _color,
+                                                ),
+                                              ),
+                                              behavior: HitTestBehavior.translucent,
+                                            ),
+                                            IconButton(
+                                              onPressed: () {},
+                                              icon: Icon(Icons.mode_comment_outlined, color: Colors.white,),
+                                            ),
+                                            IconButton(
+                                              onPressed: () {},
+                                              icon: Icon(Icons.send, color: Colors.white,),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ))),
+                          ],
+                        ),
+                      ),
+                      // Social Interaction Box
+
+                      Expanded(
+                        flex: 70,
+                        child: Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              ButtonTheme(
-                                minWidth: MediaQuery.of(context).size.width,
-                                buttonColor: Colors.transparent,
-                                child: OutlineButton(
-                                  borderSide: BorderSide(color: Colors.black),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(50)),
-                                  onPressed: () {
-                                    showSearch(
-                                      context: context,
-                                      delegate: Search(widget.list),
-                                    );
-                                  },
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                              Expanded(
+                                flex: 17,
+                                child: Container(
+                                  margin: EdgeInsets.only(left: 15),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "Search NGO's",
-                                        style: TextStyle(color: Colors.grey),
+                                        'Newest Pets',
+                                        style: TextStyle(
+                                          fontFamily: 'Roboto',
+                                          fontWeight: FontWeight.w900,
+                                          fontSize:
+                                              MediaQuery.of(context).size.width *
+                                                  0.1,
+                                        ),
                                       ),
-                                      Icon(Icons.search)
+                                      Text(
+                                        'Each new day, A new life saved!!',
+                                        style: TextStyle(color: Colors.grey[600]),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 34,
+                                child: Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.25,
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Stack(
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  Navigator.pushNamed(
+                                                      context, '/DogProfile');
+                                                },
+                                                child: Container(
+                                                  margin: EdgeInsets.all(10),
+                                                  child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                      child: Image(
+                                                        image: AssetImage(
+                                                            'assets/1.jpg'),
+                                                      )),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(20.0),
+                                                child: Text(
+                                                  'Dog 1',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                margin: EdgeInsets.all(10),
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(20),
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          'assets/2.jpg'),
+                                                    )),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(20.0),
+                                                child: Text(
+                                                  'Dog 2',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                margin: EdgeInsets.all(10),
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(20),
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          'assets/3.jpg'),
+                                                    )),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(20.0),
+                                                child: Text(
+                                                  'Dog 3',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                margin: EdgeInsets.all(10),
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(20),
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          'assets/4.jpg'),
+                                                    )),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(20.0),
+                                                child: Text(
+                                                  'Dog 4',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 10,
+                                child: Container(
+                                  margin: EdgeInsets.only(left: 15),
+                                  child: Text(
+                                    "Top NGOs",
+                                    style: TextStyle(
+                                      fontFamily: 'Roboto',
+                                      fontWeight: FontWeight.w900,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width * 0.1,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 34,
+                                child: Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.25,
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.3,
+                                                margin: EdgeInsets.all(10),
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(20),
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          'assets/1n.jpg'),
+                                                    )),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(20.0),
+                                                child: Text(
+                                                  'Dog 1',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.3,
+                                                margin: EdgeInsets.all(10),
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(20),
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          'assets/2n.jpg'),
+                                                    )),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(20.0),
+                                                child: Text(
+                                                  'Dog 2',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.3,
+                                                margin: EdgeInsets.all(10),
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(20),
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          'assets/3n.png'),
+                                                    )),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(20.0),
+                                                child: Text(
+                                                  'Dog 3',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.3,
+                                                margin: EdgeInsets.all(10),
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(20),
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          'assets/4n.jpg'),
+                                                    )),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(20.0),
+                                                child: Text(
+                                                  'Dog 4',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -312,427 +855,117 @@ class _DogHelpState extends State<Home> {
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                    Expanded(
-                      flex: 70,
-                      child: Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      ),
+                      Expanded(
+                        flex: 25,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Expanded(
-                              flex: 17,
-                              child: Container(
-                                margin: EdgeInsets.only(left: 15),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Newest Pets',
-                                      style: TextStyle(
-                                        fontFamily: 'Roboto',
-                                        fontWeight: FontWeight.w900,
-                                        fontSize:
-                                            MediaQuery.of(context).size.width *
-                                                0.1,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Each new day, A new life saved!!',
-                                      style: TextStyle(color: Colors.grey[600]),
-                                    ),
-                                  ],
-                                ),
+                            Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal:
+                                      MediaQuery.of(context).size.width * 0.04),
+                              height: MediaQuery.of(context).size.height * 0.2,
+                              width: MediaQuery.of(context).size.width * 0.85,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: Colors.black87,
                               ),
-                            ),
-                            Expanded(
-                              flex: 34,
                               child: Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.25,
-                                child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: [
-                                    Row(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal:
+                                        MediaQuery.of(context).size.width * 0.04),
+                                alignment: Alignment.centerLeft,
+                                child: TextButton.icon(
+                                    onPressed: () {},
+                                    icon: Icon(
+                                      Icons.add,
+                                      color: Colors.red[400],
+                                      size: MediaQuery.of(context).size.width *
+                                          0.15,
+                                    ),
+                                    label: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
-                                        Stack(
-                                          children: [
-                                            InkWell(
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    context, '/DogProfile');
-                                              },
-                                              child: Container(
-                                                margin: EdgeInsets.all(10),
-                                                child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                    child: Image(
-                                                      image: AssetImage(
-                                                          'assets/1.jpg'),
-                                                    )),
-                                              ),
+                                        Container(
+                                          width:
+                                              MediaQuery.of(context).size.width *
+                                                  0.5,
+                                          child: Text(
+                                            'Donate today & Save lives',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.0427,
+                                              fontWeight: FontWeight.w900,
                                             ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(20.0),
-                                              child: Text(
-                                                'Dog 1',
-                                                style: TextStyle(
-                                                    fontFamily: 'Roboto',
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.white),
-                                              ),
-                                            )
-                                          ],
+                                          ),
                                         ),
-                                        Stack(
-                                          children: [
-                                            Container(
-                                              margin: EdgeInsets.all(10),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        'assets/2.jpg'),
-                                                  )),
+                                        Container(
+                                          width:
+                                              MediaQuery.of(context).size.width *
+                                                  0.5,
+                                          child: Text(
+                                            'Every donation counts. Make a small donation to a noble cause today. '
+                                            'Donate to your favourite NGO',
+                                            softWrap: true,
+                                            style: TextStyle(
+                                              color: Colors.grey[300],
+                                              fontWeight: FontWeight.w300,
+                                              fontSize: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.016,
                                             ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(20.0),
-                                              child: Text(
-                                                'Dog 2',
-                                                style: TextStyle(
-                                                    fontFamily: 'Roboto',
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.white),
-                                              ),
-                                            )
-                                          ],
+                                          ),
                                         ),
-                                        Stack(
-                                          children: [
-                                            Container(
-                                              margin: EdgeInsets.all(10),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        'assets/3.jpg'),
-                                                  )),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(20.0),
-                                              child: Text(
-                                                'Dog 3',
+                                        TextButton(
+                                          onPressed: () {},
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'Donate now',
                                                 style: TextStyle(
-                                                    fontFamily: 'Roboto',
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.white),
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.02),
                                               ),
-                                            )
-                                          ],
-                                        ),
-                                        Stack(
-                                          children: [
-                                            Container(
-                                              margin: EdgeInsets.all(10),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        'assets/4.jpg'),
-                                                  )),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(20.0),
-                                              child: Text(
-                                                'Dog 4',
-                                                style: TextStyle(
-                                                    fontFamily: 'Roboto',
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.white),
+                                              Icon(
+                                                Icons.arrow_forward_ios,
+                                                color: Colors.white,
+                                                size: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.02,
                                               ),
-                                            )
-                                          ],
-                                        ),
+                                            ],
+                                          ),
+                                        )
                                       ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 10,
-                              child: Container(
-                                margin: EdgeInsets.only(left: 15),
-                                child: Text(
-                                  "Top NGOs",
-                                  style: TextStyle(
-                                    fontFamily: 'Roboto',
-                                    fontWeight: FontWeight.w900,
-                                    fontSize:
-                                        MediaQuery.of(context).size.width * 0.1,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 34,
-                              child: Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.25,
-                                child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Stack(
-                                          children: [
-                                            Container(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.3,
-                                              margin: EdgeInsets.all(10),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        'assets/1n.jpg'),
-                                                  )),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(20.0),
-                                              child: Text(
-                                                'Dog 1',
-                                                style: TextStyle(
-                                                    fontFamily: 'Roboto',
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.white),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        Stack(
-                                          children: [
-                                            Container(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.3,
-                                              margin: EdgeInsets.all(10),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        'assets/2n.jpg'),
-                                                  )),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(20.0),
-                                              child: Text(
-                                                'Dog 2',
-                                                style: TextStyle(
-                                                    fontFamily: 'Roboto',
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.white),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        Stack(
-                                          children: [
-                                            Container(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.3,
-                                              margin: EdgeInsets.all(10),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        'assets/3n.png'),
-                                                  )),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(20.0),
-                                              child: Text(
-                                                'Dog 3',
-                                                style: TextStyle(
-                                                    fontFamily: 'Roboto',
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.white),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        Stack(
-                                          children: [
-                                            Container(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.3,
-                                              margin: EdgeInsets.all(10),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        'assets/4n.jpg'),
-                                                  )),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(20.0),
-                                              child: Text(
-                                                'Dog 4',
-                                                style: TextStyle(
-                                                    fontFamily: 'Roboto',
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.white),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                    )),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 25,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal:
-                                    MediaQuery.of(context).size.width * 0.04),
-                            height: MediaQuery.of(context).size.height * 0.2,
-                            width: MediaQuery.of(context).size.width * 0.85,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              color: Colors.black87,
-                            ),
-                            child: Container(
-                              margin: EdgeInsets.symmetric(
-                                  horizontal:
-                                      MediaQuery.of(context).size.width * 0.04),
-                              alignment: Alignment.centerLeft,
-                              child: TextButton.icon(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.add,
-                                    color: Colors.red[400],
-                                    size: MediaQuery.of(context).size.width *
-                                        0.15,
-                                  ),
-                                  label: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        child: Text(
-                                          'Donate today & Save lives',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.0427,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        child: Text(
-                                          'Every donation counts. Make a small donation to a noble cause today. '
-                                          'Donate to your favourite NGO',
-                                          softWrap: true,
-                                          style: TextStyle(
-                                            color: Colors.grey[300],
-                                            fontWeight: FontWeight.w300,
-                                            fontSize: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.016,
-                                          ),
-                                        ),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {},
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              'Donate now',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize:
-                                                      MediaQuery.of(context)
-                                                              .size
-                                                              .height *
-                                                          0.02),
-                                            ),
-                                            Icon(
-                                              Icons.arrow_forward_ios,
-                                              color: Colors.white,
-                                              size: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.02,
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  )),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -741,23 +974,21 @@ class _DogHelpState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-              icon: Icon(Icons.notifications),
+              icon: Icon(Icons.circle_notifications),
               onPressed: () {},
-              iconSize: 35,
+              iconSize: 40,
             ),
             IconButton(
               icon: Icon(Icons.camera),
               onPressed: () {
                 Navigator.pushNamed(context, '/Camera');
               },
-              iconSize: 35,
+              iconSize: 40,
             ),
             IconButton(
-              icon: Icon(Icons.person),
-              onPressed: () {
-                Navigator.pushNamed(context, '/ProfilePage');
-              },
-              iconSize: 35,
+              icon: Icon(Icons.location_on),
+              onPressed: () {},
+              iconSize: 40,
             ),
           ],
         ),

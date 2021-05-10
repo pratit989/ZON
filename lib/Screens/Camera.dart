@@ -68,45 +68,39 @@ class TakePictureScreenState extends State<TakePictureScreen> {
           }
         },
       ),
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.transparent,
-        elevation: 0,
-        child: Container(
-          margin: EdgeInsets.all(50),
-          child: RawMaterialButton(
-            fillColor: Colors.red[300],
-            padding: EdgeInsets.all(10),
-            child: Icon(
-              Icons.camera_alt,
-              size: 40,
-              color: Colors.white,
-            ),
-            // Provide an onPressed callback.
-            onPressed: () async {
-              // Take the Picture in a try / catch block. If anything goes wrong,
-              // catch the error.
-              try {
-                // Ensure that the camera is initialized.
-                await _initializeControllerFuture;
-
-                // Attempt to take a picture and log where it's been saved.
-                XFile file = await _controller.takePicture();
-
-                // If the picture was taken, display it on a new screen.
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        DisplayPictureScreen(imagePath: file.path),
-                  ),
-                );
-              } catch (e) {
-                // If an error occurs, log the error to the console.
-                print(e);
-              }
-            },
-          ),
+      bottomNavigationBar: RawMaterialButton(
+        constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height*0.12),
+        fillColor: Colors.black87,
+        padding: EdgeInsets.all(10),
+        child: Icon(
+          Icons.camera_alt,
+          size: 50,
+          color: Colors.white,
         ),
+        // Provide an onPressed callback.
+        onPressed: () async {
+          // Take the Picture in a try / catch block. If anything goes wrong,
+          // catch the error.
+          try {
+            // Ensure that the camera is initialized.
+            await _initializeControllerFuture;
+
+            // Attempt to take a picture and log where it's been saved.
+            XFile file = await _controller.takePicture();
+
+            // If the picture was taken, display it on a new screen.
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    DisplayPictureScreen(imagePath: file.path),
+              ),
+            );
+          } catch (e) {
+            // If an error occurs, log the error to the console.
+            print(e);
+          }
+        },
       ),
     );
   }
@@ -126,7 +120,7 @@ class DisplayPictureScreen extends StatelessWidget {
         backgroundColor: Colors.black87,
         title: Text(
           'Save A Dog',
-          style: TextStyle(color: Colors.red[300]),
+          style: TextStyle(color: Colors.blue),
         ),
       ),
       body: Stack(
@@ -191,6 +185,7 @@ class DisplayPictureScreen extends StatelessWidget {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                           content: Text('Processing Data')));
+
                                 }
                               },
                             ),

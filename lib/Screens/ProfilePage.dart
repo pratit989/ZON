@@ -257,7 +257,7 @@ class _ProfilePageState extends State<ProfilePage> {
               gradient: RadialGradient(
                 center: Alignment(0, -0.5),
                   radius: 0.4,
-                  colors: [Colors.yellow[400]!, Colors.red])
+                  colors: [Colors.yellow, Colors.orange])
           ),
           child: ListView(
             scrollDirection: Axis.vertical,
