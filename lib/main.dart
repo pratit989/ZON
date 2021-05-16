@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dog_help_demo/Screens/Maps.dart';
 import 'package:dog_help_demo/Screens/ProfilePage.dart';
 import 'package:dog_help_demo/Screens/ProfilePicture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -91,6 +92,7 @@ class _AppState extends State<App> {
         '/SignUp': (context) => SignUp(authInstance: auth, storageInstance: storage),
         ExtractArguments.routeName: (context) => ExtractArguments(),
         '/ProfilePage': (context) => ProfilePage(authInstance: auth, storageInstance: storage),
+        '/Map': (context) => MapSample(),
       },
     );
   }

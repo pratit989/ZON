@@ -301,7 +301,7 @@ class _DogHelpState extends State<Home> {
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
-              tooltip: 'Open Map',
+              tooltip: 'Open Drawer',
             );
           },
         ),
@@ -327,7 +327,7 @@ class _DogHelpState extends State<Home> {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.only(top: 20.0),
             child: ListView(
               scrollDirection: Axis.vertical,
               children: [
@@ -987,7 +987,9 @@ class _DogHelpState extends State<Home> {
             ),
             IconButton(
               icon: Icon(Icons.location_on),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, '/Map');
+              },
               iconSize: 40,
             ),
           ],
