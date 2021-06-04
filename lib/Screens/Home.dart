@@ -65,7 +65,7 @@ class _DogHelpState extends State<Home> {
   Color _color = Colors.white;
 
   // PageView Controller
-  var controller = PageController(viewportFraction: 0.38);
+  var controller = PageController(viewportFraction: 1);
 
   @override
   void initState() {
@@ -330,7 +330,7 @@ class _DogHelpState extends State<Home> {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
+            padding: const EdgeInsets.only(top: 1.5),
             child: ListView(
               scrollDirection: Axis.vertical,
               children: [
@@ -589,113 +589,123 @@ class _DogHelpState extends State<Home> {
                                   child: PageView(
                                     controller: controller,
                                     children: [
-                                      Stack(
+                                      Row(
                                         children: [
-                                          InkWell(
-                                            onTap: () {
-                                              Navigator.pushNamed(
-                                                  context, '/DogProfile');
-                                            },
-                                            child: Container(
-                                              margin: EdgeInsets.all(10),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                  BorderRadius.circular(
-                                                      20),
-                                                  child: Image(
-                                                    image: AssetImage(
-                                                        'assets/1.jpg'),
-                                                  )),
-                                            ),
+                                          Stack(
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  Navigator.pushNamed(
+                                                      context, '/DogProfile');
+                                                },
+                                                child: Container(
+                                                  margin: EdgeInsets.all(10),
+                                                  child: ClipRRect(
+                                                      borderRadius:
+                                                      BorderRadius.circular(
+                                                          20),
+                                                      child: Image(
+                                                        image: AssetImage(
+                                                            'assets/1.jpg'),
+                                                      )),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                const EdgeInsets.all(20.0),
+                                                child: Text(
+                                                  'Dog 1',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                              )
+                                            ],
                                           ),
-                                          Padding(
-                                            padding:
-                                            const EdgeInsets.all(20.0),
-                                            child: Text(
-                                              'Dog 1',
-                                              style: TextStyle(
-                                                  fontFamily: 'Roboto',
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white),
-                                            ),
-                                          )
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                margin: EdgeInsets.all(10),
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                    BorderRadius.circular(20),
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          'assets/2.jpg'),
+                                                    )),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                const EdgeInsets.all(20.0),
+                                                child: Text(
+                                                  'Dog 2',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         ],
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                       ),
-                                      Stack(
+                                      Row(
                                         children: [
-                                          Container(
-                                            margin: EdgeInsets.all(10),
-                                            child: ClipRRect(
-                                                borderRadius:
-                                                BorderRadius.circular(20),
-                                                child: Image(
-                                                  image: AssetImage(
-                                                      'assets/2.jpg'),
-                                                )),
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                margin: EdgeInsets.all(10),
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                    BorderRadius.circular(20),
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          'assets/3.jpg'),
+                                                    )),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                const EdgeInsets.all(20.0),
+                                                child: Text(
+                                                  'Dog 3',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                              )
+                                            ],
                                           ),
-                                          Padding(
-                                            padding:
-                                            const EdgeInsets.all(20.0),
-                                            child: Text(
-                                              'Dog 2',
-                                              style: TextStyle(
-                                                  fontFamily: 'Roboto',
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      Stack(
-                                        children: [
-                                          Container(
-                                            margin: EdgeInsets.all(10),
-                                            child: ClipRRect(
-                                                borderRadius:
-                                                BorderRadius.circular(20),
-                                                child: Image(
-                                                  image: AssetImage(
-                                                      'assets/3.jpg'),
-                                                )),
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                margin: EdgeInsets.all(10),
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                    BorderRadius.circular(20),
+                                                    child: Image(
+                                                      image: AssetImage(
+                                                          'assets/4.jpg'),
+                                                    )),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                const EdgeInsets.all(20.0),
+                                                child: Text(
+                                                  'Dog 4',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                              )
+                                            ],
                                           ),
-                                          Padding(
-                                            padding:
-                                            const EdgeInsets.all(20.0),
-                                            child: Text(
-                                              'Dog 3',
-                                              style: TextStyle(
-                                                  fontFamily: 'Roboto',
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white),
-                                            ),
-                                          )
                                         ],
-                                      ),
-                                      Stack(
-                                        children: [
-                                          Container(
-                                            margin: EdgeInsets.all(10),
-                                            child: ClipRRect(
-                                                borderRadius:
-                                                BorderRadius.circular(20),
-                                                child: Image(
-                                                  image: AssetImage(
-                                                      'assets/4.jpg'),
-                                                )),
-                                          ),
-                                          Padding(
-                                            padding:
-                                            const EdgeInsets.all(20.0),
-                                            child: Text(
-                                              'Dog 4',
-                                              style: TextStyle(
-                                                  fontFamily: 'Roboto',
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white),
-                                            ),
-                                          )
-                                        ],
-                                      ),
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly
+                                      )
                                     ],
                                   ),
                                 ),

@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 class FirestoreManager {
   final String? name;
@@ -37,7 +35,7 @@ class FirestoreManager {
         .get()
         .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
-        data = documentSnapshot.data();
+        data = documentSnapshot.data() as Map<String, dynamic>?;
         print('Document data: ${documentSnapshot.data()}');
       } else {
         print('Document does not exist on the database');

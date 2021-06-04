@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapSample extends StatefulWidget {
@@ -10,43 +11,78 @@ class MapSample extends StatefulWidget {
 
 class MapSampleState extends State<MapSample> {
   Completer<GoogleMapController> _controller = Completer();
+  late LatLng currentPosition;
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
+  late Set<Marker> _markers = {};
 
-  static final CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+  bool _error = false;
+  bool _initialized = false;
+
+  void _getUserLocation() async {
+    try {
+      var position = await GeolocatorPlatform.instance
+          .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+    setState(() {
+      currentPosition = LatLng(position.latitude, position.longitude);
+      _initialized = true;
+      _error = false;
+    });
+    } catch (e) {
+      setState(() {
+        _error = true;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    _getUserLocation();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Show error message if initialization failed
+    if (_error) {
+      return Text('Something went wrong');
+    }
+
+    // Show a loader until FlutterFire is initialized
+    if (!_initialized) {
+      return Center(child: CircularProgressIndicator());
+    }
     return new Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orangeAccent,
         title: Text('Map Navigator'),
       ),
       body: GoogleMap(
-        mapType: MapType.hybrid,
-        initialCameraPosition: _kGooglePlex,
+        markers: _markers,
+        mapType: MapType.normal,
+        initialCameraPosition: CameraPosition(
+          target: currentPosition,
+          zoom: 40
+        ),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
+        onTap: _handleTap,
       ),
-      /* floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.orange,
-        onPressed: _goToTheLake,
-        label: Text('To the lake!'),
-        icon: Icon(Icons.directions_boat),
-      ), */
     );
   }
 
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+  _handleTap(LatLng point) {
+    setState(() {
+      _markers.clear();
+      _markers.add(Marker(
+        markerId: MarkerId(point.toString()),
+        position: point,
+        infoWindow: InfoWindow(
+          title: 'I am a marker',
+        ),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      ));
+    });
   }
 }
