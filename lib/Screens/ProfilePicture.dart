@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dog_help_demo/Backend/FileManager.dart';
 import 'package:dog_help_demo/Backend/FirebaseStorageManager.dart';
+import 'package:dog_help_demo/Screens/Home.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -48,6 +49,8 @@ class ExtractArguments extends StatelessWidget {
                         storageManager.uploadFile(
                             storageManager.profilePictureReferenceURL,
                             compressedFile);
+                        profileURL = await storageManager
+                            .getDownloadURL(storageManager.profilePictureReferenceURL);
                         Navigator.pop(context);
                       } on FirebaseException catch (e) {
                         print(e);
@@ -65,6 +68,8 @@ class ExtractArguments extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Deleting Image')));
                     await storageManager.resetProfilePicture();
+                    profileURL = await storageManager
+                        .getDownloadURL(storageManager.profilePictureReferenceURL);
                     Navigator.pop(context);
                   },
                   iconSize: 35,
@@ -79,16 +84,15 @@ class ExtractArguments extends StatelessWidget {
               ],
             ),
           ),
-          body: Center(child: Image.network(args.url))),
+          body: Center(child: Image.network(profileURL))),
     );
   }
 }
 
 class PictureDisplay {
-  late final String url;
   final FirebaseAuth auth;
   final FirebaseStorage storage;
 
   PictureDisplay(
-      {required this.url, required this.auth, required this.storage});
+      {required this.auth, required this.storage});
 }

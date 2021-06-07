@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:dog_help_demo/Screens/Home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -30,7 +31,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       // Get a specific camera from the list of available cameras.
       widget.camera,
       // Define the resolution to use.
-      ResolutionPreset.high,
+      ResolutionPreset.ultraHigh,
     );
 
     // Next, initialize the controller. This returns a Future.
@@ -70,11 +71,11 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       ),
       bottomNavigationBar: RawMaterialButton(
         constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height*0.12),
-        fillColor: Colors.black87,
+        fillColor: Colors.black,
         padding: EdgeInsets.all(10),
         child: Icon(
-          Icons.camera_alt,
-          size: 50,
+          Icons.circle,
+          size: 80,
           color: Colors.white,
         ),
         // Provide an onPressed callback.
@@ -109,19 +110,13 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 // A widget that displays the picture taken by the user.
 class DisplayPictureScreen extends StatelessWidget {
   final String imagePath;
-  final _formKey = GlobalKey<FormState>();
-
   DisplayPictureScreen({required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black87,
-        title: Text(
-          'Save A Dog',
-          style: TextStyle(color: Colors.blue),
-        ),
+        backgroundColor: Colors.indigo,
       ),
       body: Stack(
         alignment: Alignment.bottomCenter,
@@ -131,70 +126,23 @@ class DisplayPictureScreen extends StatelessWidget {
             height: MediaQuery.of(context).size.height,
             child: Image.file(File(imagePath), fit: BoxFit.fill),
           ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.1,
-            child: Scaffold(
-              body: Builder(
-                builder: (context) {
-                  return Container(
-                    height: MediaQuery.of(context).size.height,
-                    padding: EdgeInsets.all(10),
-                    color: Colors.black87,
-                    child: Form(
-                      key: _formKey,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Location: ',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize:
-                                    MediaQuery.of(context).size.width * 0.05),
-                          ),
-                          Expanded(
-                            child: Container(
-                              child: TextFormField(
-                                cursorColor: Colors.white,
-                                textCapitalization: TextCapitalization.words,
-                                style: TextStyle(color: Colors.red[300]),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter some text';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.1,
-                            child: RawMaterialButton(
-                              fillColor: Colors.transparent,
-                              elevation: 0,
-                              child: Icon(
-                                Icons.done,
-                                size: MediaQuery.of(context).size.width * 0.1,
-                                color: Colors.white,
-                              ),
-                              // Provide an onPressed callback.
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  // If the form is valid, display a Snackbar.
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text('Processing Data')));
-
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Transform.translate(
+              offset: Offset(0,-20),
+              child: FloatingActionButton(
+                onPressed: () {
+                  photoUrl = imagePath;
+                  if (location == '') {
+                    Navigator.pushReplacementNamed(context, '/Map');
+                  }
                 },
+                child: Icon(
+                    Icons.check,
+                  size: 40,
+                  color: Colors.black,
+                ),
+                backgroundColor: Colors.white,
               ),
             ),
           ),

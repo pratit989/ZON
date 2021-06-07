@@ -38,6 +38,8 @@ dependencies:
   cloud_firestore:
   google_maps_flutter:
   geolocator:
+  geocoder:
+  firebase_app_check:
 
 dev_dependencies:
   flutter_test:

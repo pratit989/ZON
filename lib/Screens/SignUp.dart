@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
+import '../main.dart';
+
 class Item {
   const Item(this.name, this.icon);
 
@@ -12,10 +14,6 @@ class Item {
 }
 
 class SignUp extends StatefulWidget {
-  final FirebaseAuth authInstance;
-  final FirebaseStorage storageInstance;
-
-  SignUp({required this.authInstance, required this.storageInstance});
 
   @override
   _LoginState createState() => _LoginState();
@@ -27,8 +25,8 @@ class _LoginState extends State<SignUp> {
   late String name;
   late String phoneNumber;
   late final FirebaseStorageManager storageManager = FirebaseStorageManager(
-      storageInstance: widget.storageInstance,
-      authInstance: widget.authInstance);
+      storageInstance: storageInstance,
+      authInstance: authInstance);
 
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
@@ -274,7 +272,7 @@ class _LoginState extends State<SignUp> {
                                     FocusScope.of(context)
                                         .requestFocus(FocusNode());
                                     try {
-                                      await widget.authInstance
+                                      await authInstance
                                           .createUserWithEmailAndPassword(
                                               email: email, password: password);
                                       ScaffoldMessenger.of(context)
@@ -283,16 +281,14 @@ class _LoginState extends State<SignUp> {
                                                   Text('Creating Profile')));
                                       storageManager.resetProfilePicture();
                                       User user =
-                                          widget.authInstance.currentUser!;
-                                      user.updateProfile(
-                                          displayName: name,
-                                          photoURL: storageManager
-                                              .profilePictureReferenceURL);
+                                          authInstance.currentUser!;
+                                      user.updateDisplayName(name);
+                                      user.updatePhotoURL(storageManager.profilePictureReferenceURL);
                                       FirestoreManager(
                                         name: name,
                                         userType: selectedUser!.name,
                                         phoneNo: int.parse(phoneNumber),
-                                        authInstance: widget.authInstance
+                                        authInstance: authInstance
                                       ).addUser();
                                       Navigator.pushReplacementNamed(
                                           context, '/Login');

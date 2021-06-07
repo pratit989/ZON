@@ -2,12 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
-  final FirebaseAuth authInstance;
-
-  Login({
-    required this.authInstance,
-  });
-
   @override
   _LoginState createState() => _LoginState();
 }

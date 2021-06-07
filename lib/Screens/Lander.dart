@@ -1,18 +1,11 @@
 import 'package:dog_help_demo/Screens/Home.dart';
 import 'package:dog_help_demo/Screens/Login.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Lander extends StatefulWidget {
-  final FirebaseAuth authInstance;
-  final firebase_storage.FirebaseStorage storageInstance;
+import '../main.dart';
 
-  Lander({
-    required this.authInstance,
-    required this.storageInstance,
-  });
+class Lander extends StatefulWidget {
 
   @override
   _LanderState createState() => _LanderState();
@@ -21,12 +14,10 @@ class Lander extends StatefulWidget {
 class _LanderState extends State<Lander> {
   @override
   Widget build(BuildContext context) {
-    if (widget.authInstance.currentUser != null) {
-      return Home(
-          authInstance: widget.authInstance,
-          storageInstance: widget.storageInstance);
+    if (authInstance.currentUser != null) {
+      return Home();
     } else {
-      return Login(authInstance: widget.authInstance);
+      return Login();
     }
   }
 }

@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:dog_help_demo/Screens/Maps.dart';
+import 'package:dog_help_demo/Screens/NGOHome.dart';
 import 'package:dog_help_demo/Screens/ProfilePage.dart';
 import 'package:dog_help_demo/Screens/ProfilePicture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:dog_help_demo/Screens/Camera.dart';
 import 'package:dog_help_demo/Screens/Login.dart';
-import 'package:dog_help_demo/Screens/SaveADog.dart';
+import 'package:dog_help_demo/Screens/SaveALife.dart';
 import 'package:dog_help_demo/Screens/SignUp.dart';
 import 'package:flutter/material.dart';
 import 'package:dog_help_demo/Screens/Home.dart';
@@ -14,6 +15,13 @@ import 'package:dog_help_demo/Screens/DogProfile.dart';
 import 'package:camera/camera.dart';
 import 'package:dog_help_demo/Screens/Lander.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:dog_help_demo/Screens/Notifications.dart';
+
+// initialisation of Firebase Authentication
+FirebaseAuth authInstance = FirebaseAuth.instance;
+// initialisation of Firebase Storage
+FirebaseStorage storageInstance = FirebaseStorage.instance;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +55,7 @@ class _AppState extends State<App> {
     try {
       // Wait for Firebase to initialize and set `_initialized` state to true
       await Firebase.initializeApp();
+      await FirebaseAppCheck.instance.activate(webRecaptchaSiteKey: 'recaptcha-v3-site-key');
       setState(() {
         _initialized = true;
       });
@@ -76,23 +85,21 @@ class _AppState extends State<App> {
       return Center(child: CircularProgressIndicator());
     }
 
-    // initialisation of Firebase Authentication
-    FirebaseAuth auth = FirebaseAuth.instance;
-    // initialisation of Firebase Storage
-    FirebaseStorage storage = FirebaseStorage.instance;
     // Running the main app
     return MaterialApp(
-      home: Lander(authInstance: auth, storageInstance: storage,),
+      home: Lander(),
       routes: {
-        '/Home': (context) => Home(authInstance: auth, storageInstance: storage),
+        '/Home': (context) => Home(),
         '/DogProfile': (context) => DogProfile(),
         '/Camera': (context) => TakePictureScreen(camera: widget.camera),
         '/SaveADog': (context) => SaveADog(),
-        '/Login': (context) => Login(authInstance: auth),
-        '/SignUp': (context) => SignUp(authInstance: auth, storageInstance: storage),
+        '/Login': (context) => Login(),
+        '/SignUp': (context) => SignUp(),
         ExtractArguments.routeName: (context) => ExtractArguments(),
-        '/ProfilePage': (context) => ProfilePage(authInstance: auth, storageInstance: storage),
+        '/ProfilePage': (context) => ProfilePage(authInstance: authInstance, storageInstance: storageInstance),
         '/Map': (context) => MapSample(),
+        '/Notifications': (context) => Notifications(),
+        '/NGOHome': (context) => NGOHome(),
       },
     );
   }

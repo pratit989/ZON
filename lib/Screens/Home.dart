@@ -1,10 +1,22 @@
 import 'package:dog_help_demo/Backend/FirebaseStorageManager.dart';
 import 'package:dog_help_demo/Backend/FirestoreManager.dart';
+import 'package:dog_help_demo/Widgets/Drawer.dart';
 import 'package:dog_help_demo/Screens/ProfilePicture.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../main.dart';
+
+late String photoUrl = '';
+late String location = '';
+late String profileURL = '';
+Map<String, dynamic>? data = {};
+late final FirebaseStorageManager storageManager = FirebaseStorageManager(
+    storageInstance: storageInstance,
+    authInstance: authInstance);
+
+late final FirestoreManager firestoreManager =
+FirestoreManager(authInstance: authInstance);
 
 class Home extends StatefulWidget {
   final List<String> list = [
@@ -13,30 +25,14 @@ class Home extends StatefulWidget {
     'Applied Animal',
     'Small Paws'
   ];
-  final FirebaseAuth authInstance;
-  final firebase_storage.FirebaseStorage storageInstance;
-
-  Home({
-    required this.authInstance,
-    required this.storageInstance,
-  });
 
   @override
   _DogHelpState createState() => _DogHelpState();
 }
 
 class _DogHelpState extends State<Home> {
-  late final FirebaseStorageManager storageManager = FirebaseStorageManager(
-      storageInstance: widget.storageInstance,
-      authInstance: widget.authInstance);
 
-  late final FirestoreManager firestoreManager =
-      FirestoreManager(authInstance: widget.authInstance);
-
-  Map<String, dynamic>? data;
-
-  // Download URL for profile picture
-  late String profileURL;
+  late String pastURL = '';
 
   // Set default `_initialized` and `_error` state to false
   bool _initialized = false;
@@ -48,6 +44,7 @@ class _DogHelpState extends State<Home> {
       // Wait to get Download URl for Profile Picture
       profileURL = await storageManager
           .getDownloadURL(storageManager.profilePictureReferenceURL);
+      pastURL = profileURL;
       data = await firestoreManager.getUserData();
       setState(() {
         _initialized = true;
@@ -75,6 +72,11 @@ class _DogHelpState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    if (pastURL != profileURL) {
+      setState(() {});
+      initializeProfile();
+      return Center(child: CircularProgressIndicator());
+    }
     // Show error message if initialization failed
     if (_error) {
       return Text('Something went wrong');
@@ -86,174 +88,7 @@ class _DogHelpState extends State<Home> {
     }
     return Scaffold(
       extendBodyBehindAppBar: true,
-      drawer: Drawer(
-        child: Container(
-          color: Colors.black87,
-          child: ListView(
-            padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.height * 0.04,
-                vertical: MediaQuery.of(context).size.height * 0.1),
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () async {
-                          print('tapped');
-                          await Navigator.pushNamed(
-                              context, ExtractArguments.routeName,
-                              arguments: PictureDisplay(
-                                url: profileURL,
-                                auth: widget.authInstance,
-                                storage: widget.storageInstance,
-                              ));
-                          initializeProfile();
-                          setState(() {});
-                        },
-                        child: CircleAvatar(
-                          maxRadius: 30,
-                          backgroundImage: NetworkImage(profileURL),
-                          key: UniqueKey(),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 10),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.authInstance.currentUser!.displayName!,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize:
-                                    MediaQuery.of(context).size.width * 0.08,
-                              ),
-                            ),
-                            Text(
-                              data!['user_type'],
-                              style: TextStyle(
-                                  color: Colors.red[300],
-                                  fontWeight: FontWeight.w300),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.1,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      FloatingActionButton.extended(
-                          heroTag: 'home',
-                          onPressed: () {
-                            Navigator.pushReplacementNamed(context, '/Home');
-                          },
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          icon: Icon(
-                            Icons.home,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'Home',
-                            style: TextStyle(color: Colors.white),
-                          )),
-                      FloatingActionButton.extended(
-                          heroTag: 'save a dog',
-                          onPressed: () async {
-                            Navigator.pop(context);
-                            await Navigator.pushNamed(context, '/Camera');
-                          },
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          icon: Icon(
-                            Icons.add_a_photo,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'Save a Dog',
-                            style: TextStyle(color: Colors.white),
-                          )),
-                      FloatingActionButton.extended(
-                          heroTag: 'Messages',
-                          onPressed: () {},
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          icon: Icon(
-                            Icons.message,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'Messages',
-                            style: TextStyle(color: Colors.white),
-                          )),
-                      FloatingActionButton.extended(
-                          heroTag: 'profile',
-                          onPressed: () async {
-                            Navigator.pop(context);
-                            await Navigator.pushNamed(context, '/ProfilePage');
-                          },
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          icon: Icon(
-                            Icons.person,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'Profile',
-                            style: TextStyle(color: Colors.white),
-                          )),
-                    ],
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.35,
-                  ),
-                  Row(
-                    children: [
-                      FloatingActionButton.extended(
-                          heroTag: 'settings',
-                          onPressed: () {},
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          icon: Icon(
-                            Icons.settings,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'Settings',
-                            style: TextStyle(color: Colors.white),
-                          )),
-                      Text(
-                        '|',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      FloatingActionButton.extended(
-                          onPressed: () async {
-                            await widget.authInstance.signOut();
-                            Navigator.pushReplacementNamed(context, '/Login');
-                          },
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          icon: null,
-                          label: Text(
-                            'Log Out',
-                            style: TextStyle(color: Colors.white),
-                          )),
-                    ],
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
+      drawer: MyDrawer(),
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -265,7 +100,7 @@ class _DogHelpState extends State<Home> {
             Text(
               'O',
               style: TextStyle(
-                  color: Colors.indigoAccent,
+                  color: Colors.amber,
                   fontSize: 30,
                   fontWeight: FontWeight.w900),
             ),
@@ -289,7 +124,7 @@ class _DogHelpState extends State<Home> {
                   delegate: Search(widget.list),
                 );
               },
-              tooltip: 'Open end drawer',
+              tooltip: 'Open Search',
             );
           })
         ],
@@ -316,7 +151,8 @@ class _DogHelpState extends State<Home> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(40), topRight: Radius.circular(40)),
-            gradient: LinearGradient(colors: [Colors.indigo, Colors.white],begin: Alignment.topCenter, end: Alignment.bottomCenter),
+            color: Color.fromRGBO(253, 201, 11, 1.0),
+            // gradient: LinearGradient(colors: [Colors.amber, Colors.white],begin: Alignment.topCenter, end: Alignment.bottomCenter),
             boxShadow: [
               const BoxShadow(
                 color: Colors.grey,
@@ -364,7 +200,7 @@ class _DogHelpState extends State<Home> {
                                             CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                widget.authInstance.currentUser!.displayName!,
+                                                authInstance.currentUser!.displayName!,
                                                 style: TextStyle(color: Colors.white),
                                               ),
                                               Text(
@@ -383,9 +219,8 @@ class _DogHelpState extends State<Home> {
                                               await Navigator.pushNamed(
                                                   context, ExtractArguments.routeName,
                                                   arguments: PictureDisplay(
-                                                    url: profileURL,
-                                                    auth: widget.authInstance,
-                                                    storage: widget.storageInstance,
+                                                    auth: authInstance,
+                                                    storage: storageInstance,
                                                   ));
                                               initializeProfile();
                                               setState(() {});
@@ -463,7 +298,7 @@ class _DogHelpState extends State<Home> {
                                             CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                widget.authInstance.currentUser!.displayName!,
+                                                authInstance.currentUser!.displayName!,
                                                 style: TextStyle(color: Colors.white),
                                               ),
                                               Text(
@@ -482,9 +317,8 @@ class _DogHelpState extends State<Home> {
                                               await Navigator.pushNamed(
                                                   context, ExtractArguments.routeName,
                                                   arguments: PictureDisplay(
-                                                    url: profileURL,
-                                                    auth: widget.authInstance,
-                                                    storage: widget.storageInstance,
+                                                    auth: authInstance,
+                                                    storage: storageInstance,
                                                   ));
                                               initializeProfile();
                                               setState(() {});
@@ -576,7 +410,10 @@ class _DogHelpState extends State<Home> {
                                       ),
                                       Text(
                                         'Each new day, A new life saved!!',
-                                        style: TextStyle(color: Colors.black54),
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                          fontWeight: FontWeight.w800
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -875,7 +712,7 @@ class _DogHelpState extends State<Home> {
                               width: MediaQuery.of(context).size.width * 0.85,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(30),
-                                color: Colors.black87,
+                                color: Color.fromRGBO(30, 30, 30, 1),
                               ),
                               child: Container(
                                 margin: EdgeInsets.symmetric(
@@ -976,29 +813,51 @@ class _DogHelpState extends State<Home> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              icon: Icon(Icons.circle_notifications),
-              onPressed: () {},
-              iconSize: 40,
-            ),
-            IconButton(
-              icon: Icon(Icons.camera),
-              onPressed: () {
-                Navigator.pushNamed(context, '/Camera');
-              },
-              iconSize: 40,
-            ),
-            IconButton(
-              icon: Icon(Icons.location_on),
-              onPressed: () {
-                Navigator.pushNamed(context, '/Map');
-              },
-              iconSize: 40,
-            ),
-          ],
+        child: Container(
+          height: MediaQuery.of(context).size.height*0.1,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.circle_notifications),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/Notifications');
+                    },
+                    iconSize: 40,
+                  ),
+                  Text('Notifications'),
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.camera_alt),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/Camera');
+                    },
+                    iconSize: 40,
+                  ),
+                  Text('Camera')
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.location_on),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/Map');
+                    },
+                    iconSize: 40,
+                  ),
+                  Text('Map')
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
