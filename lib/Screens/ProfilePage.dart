@@ -1,30 +1,18 @@
 import 'package:dog_help_demo/Backend/FirebaseStorageManager.dart';
-import 'package:dog_help_demo/Backend/FirestoreManager.dart';
 import 'package:dog_help_demo/Widgets/Drawer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
+import '../main.dart';
 import 'ProfilePicture.dart';
 
 class ProfilePage extends StatefulWidget {
-  final FirebaseStorage storageInstance;
-  final FirebaseAuth authInstance;
-
-  ProfilePage({required this.storageInstance, required this.authInstance});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  late final FirebaseStorageManager storageManager = FirebaseStorageManager(
-      storageInstance: widget.storageInstance,
-      authInstance: widget.authInstance);
-
-  late final FirestoreManager firestoreManager =
-  FirestoreManager(authInstance: widget.authInstance);
 
   Map<String, dynamic>? data;
 
@@ -47,7 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       // Wait to get Download URl for Profile Picture
       profileURL = await storageManager
-          .getDownloadURL(storageManager.profilePictureReferenceURL);
+          .getDownloadURL(profilePictureReferenceURL);
       data = await firestoreManager.getUserData();
       setState(() {
         _initialized = true;
@@ -75,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     // Show a loader until FlutterFire is initialized
     if (!_initialized) {
-      return Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator(color: Colors.amber));
     }
 
     return Scaffold(
@@ -103,7 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
               bottom: 5
             ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
                   width: MediaQuery.of(context).size.width,
@@ -114,7 +102,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Padding(
                     padding: EdgeInsets.only(
                       bottom: 10,
-                      top: 8,
                       left: 40,
                       right: 40,
                     ),
@@ -128,10 +115,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             Padding(
                               padding: EdgeInsets.only(
-                                top: MediaQuery.of(context).size.height * 0.1,
+                                top: MediaQuery.of(context).size.height * 0.08,
                               ),
                               child: Text(
-                                  widget.authInstance.currentUser!.displayName!,
+                                  authInstance.currentUser!.displayName!,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w900,
@@ -141,43 +128,61 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ],
                         ),
+                        // Edit Profile Button
                         Padding(
                           padding: EdgeInsets.only(
-                              top: 5,
                             left: (MediaQuery.of(context).size.width-220)/2
                           ),
-                          child: GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20)),
-                                color: Colors.black54,
-                              ),
-                              width: 100,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                      Icons.edit,
-                                    size: 15,
+                          child: TextButton(
+                            onPressed: () async{
+                              await Navigator.pushNamed(context, '/EditProfile').then((_) => {
+                                _initialized = false,
+                                setState(() {
+                                  initializeProfile();
+                                }),
+                              });
+                            },
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all<Color>(Colors.black54),
+                                fixedSize: MaterialStateProperty.all(Size(100, 10)),
+                                elevation: MaterialStateProperty.all(20),
+                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
+                                ),
+                                overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                                      (Set<MaterialState> states) {
+                                    if (states.contains(MaterialState.hovered))
+                                      return Colors.black54.withOpacity(0.04);
+                                    if (states.contains(MaterialState.focused) ||
+                                        states.contains(MaterialState.pressed))
+                                      return Colors.black54.withOpacity(0.12);
+                                    return null; // Defer to the widget's default.
+                                  },
+                                ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                    Icons.edit,
+                                  size: 15,
+                                  color: Colors.white,
+                                ),
+                                Text(
+                                  'Edit Profile',
+                                  style: TextStyle(
                                     color: Colors.white,
+                                    fontSize: 13
                                   ),
-                                  Text(
-                                    'Edit Profile',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                         // Data
                         Padding(
                           padding: const EdgeInsets.only(
-                            top: 30,
+                            top: 10,
                             bottom: 15
                           ),
                           child: Column(
@@ -194,7 +199,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ),
                               Text(
-                                  widget.authInstance.currentUser!.email!,
+                                  authInstance.currentUser!.email!,
                                 style: userData,
                               ),
                               Padding(
@@ -227,7 +232,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -248,7 +253,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Colors.white,
                             borderRadius: BorderRadius.all(Radius.circular(40)),
                           ),
-                          height: MediaQuery.of(context).size.height/5,
+                          height: MediaQuery.of(context).size.height/5.5,
                           width: MediaQuery.of(context).size.width,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -258,7 +263,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     top: 30
                                 ),
                                 child: Text(
-                                  '50₹',
+                                  0.toString(),
                                   style: TextStyle(
                                       fontSize: 50,
                                       fontWeight: FontWeight.w600
@@ -284,7 +289,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Colors.white,
                             borderRadius: BorderRadius.all(Radius.circular(40)),
                           ),
-                          height: MediaQuery.of(context).size.height/5,
+                          height: MediaQuery.of(context).size.height/5.5,
                           width: MediaQuery.of(context).size.width,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -294,7 +299,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     top: 30
                                 ),
                                 child: Text(
-                                  '10',
+                                  0.toString(),
                                   style: TextStyle(
                                       fontSize: 50,
                                     fontWeight: FontWeight.w600
@@ -322,20 +327,28 @@ class _ProfilePageState extends State<ProfilePage> {
                 (MediaQuery.of(context).size.width - (MediaQuery.of(context).size.height * 0.1)*2)/2,
                 (MediaQuery.of(context).size.width - (MediaQuery.of(context).size.height * 0.1)*2)/2
             ),
-            child: GestureDetector(
-              onTap: () async {
+            child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(100))
+                ),
+                elevation: MaterialStateProperty.all<double>(40),
+                fixedSize: MaterialStateProperty.all<Size>(Size(MediaQuery.of(context).size.height * 0.2, MediaQuery.of(context).size.height * 0.2))
+              ),
+              onPressed: () async {
                 print('tapped');
                 await Navigator.pushNamed(context, ExtractArguments.routeName,
                     arguments: PictureDisplay(
-                      auth: widget.authInstance,
-                      storage: widget.storageInstance,
+                      auth: authInstance,
+                      storage: storageInstance,
                 ));
                 initializeProfile();
                 setState(() {});},
               child : CircleAvatar(
-                radius: MediaQuery.of(context).size.height * 0.1,
                 backgroundColor: Colors.black,
-                child: ClipOval(child: Image.network(profileURL)),
+                radius: MediaQuery.of(context).size.height * 0.1,
+                backgroundImage: NetworkImage(profileURL),
               ),
             ),
           )

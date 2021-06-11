@@ -1,10 +1,11 @@
-import 'package:dog_help_demo/Screens/Home.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dog_help_demo/Screens/Camera.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:geocoder/geocoder.dart';
+
+import '../main.dart';
 
 class MapSample extends StatefulWidget {
   @override
@@ -55,7 +56,7 @@ class MapSampleState extends State<MapSample> {
 
     // Show a loader until FlutterFire is initialized
     if (!_initialized) {
-      return Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator(color: Colors.amber));
     }
     return new Scaffold(
       extendBodyBehindAppBar: true,
@@ -116,8 +117,10 @@ class MapSampleState extends State<MapSample> {
                         heroTag: 'tick',
                         onPressed: () {
                           location = _controllerField.value.text;
-                          if (photoUrl == '') {
+                          if (imagePath == null) {
                             Navigator.pushReplacementNamed(context, '/Camera');
+                          } else {
+                            Navigator.pushReplacementNamed(context, '/SubmitAnimalProfile');
                           }
                         },
                         backgroundColor: Colors.amber,

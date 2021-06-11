@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:dog_help_demo/Screens/Home.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../main.dart';
+
+late String? imagePath;
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
@@ -31,7 +33,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       // Get a specific camera from the list of available cameras.
       widget.camera,
       // Define the resolution to use.
-      ResolutionPreset.ultraHigh,
+      ResolutionPreset.high,
     );
 
     // Next, initialize the controller. This returns a Future.
@@ -61,20 +63,35 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
+            final size = MediaQuery.of(context).size;
+            final deviceRatio = size.width / size.height;
             // If the Future is complete, display the preview.
-            return CameraPreview(_controller);
+            return Transform.scale(
+                scale: deviceRatio*2,
+                child: Center(
+                  child: AspectRatio(
+                    aspectRatio: deviceRatio,
+                    child: CameraPreview(_controller)
+                  )
+                )
+            );
           } else {
             // Otherwise, display a loading indicator.
-            return Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator(color: Colors.amber));
           }
         },
       ),
       bottomNavigationBar: RawMaterialButton(
-        constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height*0.12),
-        fillColor: Colors.black,
+        shape: CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height*0.12,
+        ),
+        elevation: 0,
+        fillColor: Colors.transparent,
         padding: EdgeInsets.all(10),
         child: Icon(
-          Icons.circle,
+          Icons.radio_button_checked,
           size: 80,
           color: Colors.white,
         ),
@@ -88,13 +105,13 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
             // Attempt to take a picture and log where it's been saved.
             XFile file = await _controller.takePicture();
+            imagePath = file.path;
 
             // If the picture was taken, display it on a new screen.
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    DisplayPictureScreen(imagePath: file.path),
+                builder: (context) => DisplayPictureScreen(),
               ),
             );
           } catch (e) {
@@ -109,14 +126,13 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
 // A widget that displays the picture taken by the user.
 class DisplayPictureScreen extends StatelessWidget {
-  final String imagePath;
-  DisplayPictureScreen({required this.imagePath});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Stack(
         alignment: Alignment.bottomCenter,
@@ -124,27 +140,31 @@ class DisplayPictureScreen extends StatelessWidget {
           Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
-            child: Image.file(File(imagePath), fit: BoxFit.fill),
+            child: Image.file(File(imagePath!), fit: BoxFit.fill),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Transform.translate(
-              offset: Offset(0,-20),
-              child: FloatingActionButton(
-                onPressed: () {
-                  photoUrl = imagePath;
-                  if (location == '') {
-                    Navigator.pushReplacementNamed(context, '/Map');
-                  }
-                },
-                child: Icon(
-                    Icons.check,
-                  size: 40,
-                  color: Colors.black,
-                ),
-                backgroundColor: Colors.white,
-              ),
+          RawMaterialButton(
+            shape: CircleBorder(),
+            clipBehavior: Clip.antiAlias,
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height*0.12,
             ),
+            elevation: 0,
+            fillColor: Colors.transparent,
+            padding: EdgeInsets.all(10),
+            child: Icon(
+              Icons.check_circle,
+              size: 70,
+              color: Colors.white,
+            ),
+            // Provide an onPressed callback.
+            onPressed: () async {
+              if (location == null) {
+                Navigator.pushReplacementNamed(context, '/Map');
+              } else {
+                await Navigator.pushReplacementNamed(context, '/SubmitAnimalProfile');
+                Navigator.pop(context);
+              }
+            },
           ),
         ],
       ),

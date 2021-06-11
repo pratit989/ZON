@@ -108,7 +108,7 @@ class _MyDrawerState extends State<MyDrawer> {
                     FloatingActionButton.extended(
                         heroTag: 'home',
                         onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/Home');
+                          Navigator.pushReplacementNamed(context, '/NGOHome');
                         },
                         backgroundColor: Colors.transparent,
                         elevation: 0,
@@ -118,22 +118,6 @@ class _MyDrawerState extends State<MyDrawer> {
                         ),
                         label: Text(
                           'Home',
-                          style: TextStyle(color: Colors.white),
-                        )),
-                    FloatingActionButton.extended(
-                        heroTag: 'save a dog',
-                        onPressed: () async {
-                          Navigator.pop(context);
-                          await Navigator.pushNamed(context, '/Camera');
-                        },
-                        backgroundColor: Colors.transparent,
-                        elevation: 0,
-                        icon: Icon(
-                          Icons.add_a_photo,
-                          color: Colors.white,
-                        ),
-                        label: Text(
-                          'Save a Life',
                           style: TextStyle(color: Colors.white),
                         )),
                     FloatingActionButton.extended(
@@ -155,7 +139,7 @@ class _MyDrawerState extends State<MyDrawer> {
                         heroTag: 'profile',
                         onPressed: () async {
                           Navigator.pop(context);
-                          await Navigator.pushNamed(context, '/ProfilePage');
+                          await Navigator.pushNamed(context, '/NGOProfilePage');
                         },
                         backgroundColor: Colors.transparent,
                         elevation: 0,

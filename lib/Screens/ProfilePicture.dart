@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:dog_help_demo/Backend/FileManager.dart';
 import 'package:dog_help_demo/Backend/FirebaseStorageManager.dart';
-import 'package:dog_help_demo/Screens/Home.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../main.dart';
 
 class ExtractArguments extends StatelessWidget {
   static const routeName = '/extractArguments';
@@ -18,8 +18,7 @@ class ExtractArguments extends StatelessWidget {
     final PictureDisplay args =
         ModalRoute.of(context)!.settings.arguments as PictureDisplay;
     final FileManagement fileManager = FileManagement();
-    final FirebaseStorageManager storageManager = FirebaseStorageManager(
-        storageInstance: args.storage, authInstance: args.auth);
+    final FirebaseStorageManager storageManager = FirebaseStorageManager();
     return Container(
       height: MediaQuery.of(context).size.height * 0.1,
       width: MediaQuery.of(context).size.width * 0.1,
@@ -47,10 +46,10 @@ class ExtractArguments extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Uploading Image')));
                         storageManager.uploadFile(
-                            storageManager.profilePictureReferenceURL,
+                            profilePictureReferenceURL,
                             compressedFile);
                         profileURL = await storageManager
-                            .getDownloadURL(storageManager.profilePictureReferenceURL);
+                            .getDownloadURL(profilePictureReferenceURL);
                         Navigator.pop(context);
                       } on FirebaseException catch (e) {
                         print(e);
@@ -69,7 +68,7 @@ class ExtractArguments extends StatelessWidget {
                         SnackBar(content: Text('Deleting Image')));
                     await storageManager.resetProfilePicture();
                     profileURL = await storageManager
-                        .getDownloadURL(storageManager.profilePictureReferenceURL);
+                        .getDownloadURL(profilePictureReferenceURL);
                     Navigator.pop(context);
                   },
                   iconSize: 35,
