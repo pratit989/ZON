@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:dog_help_demo/Screens/NGOProfilePage.dart';
-import 'package:dog_help_demo/Widgets/Drawer.dart';
-import 'package:dog_help_demo/Widgets/Carousel.dart';
+import 'package:dog_help_demo/Widgets/UserDrawer.dart';
+import 'package:dog_help_demo/Widgets/NgoHomeCarousel.dart';
 import 'package:dog_help_demo/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';

@@ -101,7 +101,9 @@ class _UserHomeCarouselState extends State<UserHomeCarousel> {
                               auth: authInstance,
                               storage: storageInstance,
                             ));
-                        setState(() {});
+                        setState(() {
+                          Navigator.pushReplacementNamed(context, '/Home');
+                        });
                       },
                       child: CircleAvatar(
                         backgroundColor: Colors.transparent,

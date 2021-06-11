@@ -2,7 +2,7 @@
 import 'package:dog_help_demo/Backend/FirebaseStorageManager.dart';
 import 'package:dog_help_demo/Backend/FirestoreManager.dart';
 import 'package:dog_help_demo/Screens/Camera.dart';
-import 'package:dog_help_demo/Widgets/Carousel.dart';
+import 'package:dog_help_demo/Widgets/NgoHomeCarousel.dart';
 import 'package:dog_help_demo/main.dart';
 import 'package:flutter/material.dart';
 

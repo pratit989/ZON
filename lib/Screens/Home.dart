@@ -1,8 +1,9 @@
 import 'dart:ui';
 
 import 'package:dog_help_demo/Backend/FirestoreManager.dart';
+import 'package:dog_help_demo/Screens/AnimalAdoptionAdvertise.dart';
 import 'package:dog_help_demo/Screens/Camera.dart';
-import 'package:dog_help_demo/Widgets/Drawer.dart';
+import 'package:dog_help_demo/Widgets/UserDrawer.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
@@ -30,9 +31,12 @@ class _DogHelpState extends State<Home> {
         if (carousalReferenceUrlList.isNotEmpty) {
           for (int i = 0; i < carousalReferenceUrlList.length; i++) {
             try {
-              urlData.remove(carousalReferenceUrlList[i]);
+              if(urlData.containsKey(carousalReferenceUrlList[i])) {
+                urlData.remove(carousalReferenceUrlList[i]);
+              }
             } catch (ignore) {}
           }
+          carousalReferenceUrlList = [];
         }
         firestoreManager.getKeysFromMap(urlData, carousalReferenceUrlList);
         if (carousalReferenceUrlList.isNotEmpty) {
@@ -226,8 +230,17 @@ class _DogHelpState extends State<Home> {
                                       children: [
                                         InkWell(
                                           onTap: () {
+                                            adoptionData['Name'] = 'Dog 1';
+                                            adoptionData['Location'] = 'Location';
+                                            adoptionData['Age'] = 'Age';
+                                            adoptionData['Weight'] = 'Weight';
+                                            adoptionData['Sex'] = 'Sex';
+                                            adoptionData['Color'] = 'Color';
+                                            adoptionData['NGO'] = 'NGO';
+                                            adoptionData['imagePath'] = 'assets/1.jpg';
+                                            adoptionData['ngoImagePath'] = 'assets/1n.jpg';
                                             Navigator.pushNamed(
-                                                context, '/ViewAnimalProfile');
+                                                context, '/AnimalAdoptionAdvertise');
                                           },
                                           child: Container(
                                             margin: EdgeInsets.all(10),
@@ -551,7 +564,7 @@ class _DogHelpState extends State<Home> {
                                         'Donate to your favourite NGO',
                                         softWrap: true,
                                         style: TextStyle(
-                                          color: Colors.grey[300],
+                                          color: Colors.amber,
                                           fontWeight: FontWeight.w300,
                                           fontSize: MediaQuery.of(context)
                                                   .size

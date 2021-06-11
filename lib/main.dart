@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:core';
 import 'dart:developer';
+import 'package:dog_help_demo/Screens/AnimalAdoptionAdvertise.dart';
 import 'package:dog_help_demo/Screens/CheckEmail.dart';
 import 'package:dog_help_demo/Screens/EditProfile.dart';
 import 'package:dog_help_demo/Screens/Maps.dart';
@@ -131,6 +132,7 @@ class _AppState extends State<App> {
         '/Messages': (context) => MessagingInterface(),
         '/SubmitAnimalProfile': (context) => SubmitAnimalProfile(),
         '/CheckEmail': (context) => VerifyScreen(),
+        '/AnimalAdoptionAdvertise': (context) => AnimalAdoptionAdvertise()
       },
     );
   }
