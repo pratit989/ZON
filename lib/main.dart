@@ -39,7 +39,7 @@ FirebaseStorage storageInstance = FirebaseStorage.instance;
 late String? location;
 late String profileURL;
 Map<String, dynamic>? firestoreUserData;
-final List<String> ngoNamesList = [];
+List<String> ngoNamesList = [];
 late final FirebaseStorageManager storageManager = FirebaseStorageManager();
 late final FirestoreManager firestoreManager = FirestoreManager();
 Map<String, dynamic>? rescueRequests;

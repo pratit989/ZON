@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import '../main.dart';
 
@@ -106,6 +105,7 @@ class FirestoreManager {
   }
 
   Future<void> getNgoSearchList() async {
+    ngoNamesList = [];
     await users.doc('ngoList').get().then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
         Map<String, dynamic>? ngoData = documentSnapshot.data() as Map<String, dynamic>?;

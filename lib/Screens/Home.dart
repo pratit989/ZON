@@ -73,11 +73,13 @@ class _DogHelpState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+
     if (pastURL != profileURL) {
       setState(() {});
       initializeProfile();
       return Center(child: CircularProgressIndicator(color: Colors.amber));
     }
+
     // Show error message if initialization failed
     if (_error) {
       return Text('Something went wrong');
@@ -87,6 +89,7 @@ class _DogHelpState extends State<Home> {
     if (!_initialized) {
       return Center(child: CircularProgressIndicator(color: Colors.amber));
     }
+
     return Scaffold(
       drawer: MyDrawer(),
       appBar: AppBar(
@@ -269,15 +272,31 @@ class _DogHelpState extends State<Home> {
                                     ),
                                     Stack(
                                       children: [
-                                        Container(
-                                          margin: EdgeInsets.all(10),
-                                          child: ClipRRect(
-                                              borderRadius:
-                                              BorderRadius.circular(20),
-                                              child: Image(
-                                                image: AssetImage(
-                                                    'assets/2.jpg'),
-                                              )),
+                                        InkWell(
+                                          onTap: () {
+                                            adoptionData['Name'] = 'Dog 2';
+                                            adoptionData['Location'] = 'Location';
+                                            adoptionData['Age'] = 'Age';
+                                            adoptionData['Weight'] = 'Weight';
+                                            adoptionData['Sex'] = 'Sex';
+                                            adoptionData['Color'] = 'Color';
+                                            adoptionData['NGO'] = 'NGO';
+                                            adoptionData['imagePath'] = 'assets/2.jpg';
+                                            adoptionData['ngoImagePath'] = 'assets/2n.jpg';
+                                            Navigator.pushNamed(
+                                                context, '/AnimalAdoptionAdvertise');
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(10),
+                                            child: ClipRRect(
+                                                borderRadius:
+                                                BorderRadius.circular(
+                                                    20),
+                                                child: Image(
+                                                  image: AssetImage(
+                                                      'assets/2.jpg'),
+                                                )),
+                                          ),
                                         ),
                                         Padding(
                                           padding:
@@ -299,21 +318,37 @@ class _DogHelpState extends State<Home> {
                                   children: [
                                     Stack(
                                       children: [
-                                        Container(
-                                          margin: EdgeInsets.all(10),
-                                          child: ClipRRect(
-                                              borderRadius:
-                                              BorderRadius.circular(20),
-                                              child: Image(
-                                                image: AssetImage(
-                                                    'assets/3.jpg'),
-                                              )),
+                                        InkWell(
+                                          onTap: () {
+                                            adoptionData['Name'] = 'Cat 3';
+                                            adoptionData['Location'] = 'Location';
+                                            adoptionData['Age'] = 'Age';
+                                            adoptionData['Weight'] = 'Weight';
+                                            adoptionData['Sex'] = 'Sex';
+                                            adoptionData['Color'] = 'Color';
+                                            adoptionData['NGO'] = 'NGO';
+                                            adoptionData['imagePath'] = 'assets/3.jpg';
+                                            adoptionData['ngoImagePath'] = 'assets/3n.jpg';
+                                            Navigator.pushNamed(
+                                                context, '/AnimalAdoptionAdvertise');
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(10),
+                                            child: ClipRRect(
+                                                borderRadius:
+                                                BorderRadius.circular(
+                                                    20),
+                                                child: Image(
+                                                  image: AssetImage(
+                                                      'assets/3.jpg'),
+                                                )),
+                                          ),
                                         ),
                                         Padding(
                                           padding:
                                           const EdgeInsets.all(20.0),
                                           child: Text(
-                                            'Dog 3',
+                                            'Cat 1',
                                             style: TextStyle(
                                                 fontFamily: 'Roboto',
                                                 fontWeight: FontWeight.w600,
@@ -324,21 +359,37 @@ class _DogHelpState extends State<Home> {
                                     ),
                                     Stack(
                                       children: [
-                                        Container(
-                                          margin: EdgeInsets.all(10),
-                                          child: ClipRRect(
-                                              borderRadius:
-                                              BorderRadius.circular(20),
-                                              child: Image(
-                                                image: AssetImage(
-                                                    'assets/4.jpg'),
-                                              )),
+                                        InkWell(
+                                          onTap: () {
+                                            adoptionData['Name'] = 'Cat 2';
+                                            adoptionData['Location'] = 'Location';
+                                            adoptionData['Age'] = 'Age';
+                                            adoptionData['Weight'] = 'Weight';
+                                            adoptionData['Sex'] = 'Sex';
+                                            adoptionData['Color'] = 'Color';
+                                            adoptionData['NGO'] = 'NGO';
+                                            adoptionData['imagePath'] = 'assets/4.jpg';
+                                            adoptionData['ngoImagePath'] = 'assets/4n.jpg';
+                                            Navigator.pushNamed(
+                                                context, '/AnimalAdoptionAdvertise');
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.all(10),
+                                            child: ClipRRect(
+                                                borderRadius:
+                                                BorderRadius.circular(
+                                                    20),
+                                                child: Image(
+                                                  image: AssetImage(
+                                                      'assets/4.jpg'),
+                                                )),
+                                          ),
                                         ),
                                         Padding(
                                           padding:
                                           const EdgeInsets.all(20.0),
                                           child: Text(
-                                            'Dog 4',
+                                            'Cat 2',
                                             style: TextStyle(
                                                 fontFamily: 'Roboto',
                                                 fontWeight: FontWeight.w600,
@@ -451,7 +502,7 @@ class _DogHelpState extends State<Home> {
                                                   BorderRadius.circular(20),
                                               child: Image(
                                                 image: AssetImage(
-                                                    'assets/3n.png'),
+                                                    'assets/3n.jpg'),
                                               )),
                                         ),
                                         Padding(
@@ -721,8 +772,7 @@ class Search extends SearchDelegate {
 
   Search(this.listExample);
 
-  List<String> recentList = [
-  ];
+  List<String> recentList = ngoNamesList;
 
   @override
   Widget buildSuggestions(BuildContext context) {
@@ -734,20 +784,47 @@ class Search extends SearchDelegate {
             (element) => element.contains(query),
           ));
 
-    return ListView.builder(
-      itemCount: suggestionList.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(
-            suggestionList[index],
-          ),
-          leading: query.isEmpty ? Icon(Icons.access_time) : SizedBox(),
-          onTap: () {
-            selectedResult = suggestionList[index];
-            showResults(context);
-          },
-        );
-      },
+    return Container(
+      color: Colors.amber[800],
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: ListView.builder(
+        itemCount: suggestionList.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            minVerticalPadding: 0,
+            visualDensity: VisualDensity.compact,
+            title: Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              clipBehavior: Clip.antiAlias,
+              elevation: 20,
+              color: Colors.amber,
+              child: Row(
+                children: [
+                  query.isEmpty ? Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Icon(Icons.access_time, color: Colors.black,),
+                  ) : SizedBox(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 15),
+                    child: Text(
+                      suggestionList[index],
+                      style: TextStyle(
+                        color: Colors.black
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              selectedResult = suggestionList[index];
+              showResults(context);
+            },
+          );
+        },
+      ),
     );
   }
 }
