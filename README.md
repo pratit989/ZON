@@ -1,3 +1,3 @@
-# ZON (Zoophile Online Network)
+# ZON (Zoophilist Online Network)
 
 An app developed to connect users with NGOs so that they can file animal health emergencies.
